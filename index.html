@@ -221,39 +221,41 @@
         <!-- The Pinned Hero Section Overlaying the Canvas -->
         <section class="hero-pin">
             
-            <!-- Centered floating UI layer -->
-            <div class="w-full max-w-[800px] mx-auto px-8 flex flex-col items-center text-center relative z-20 content-block" id="content-block">
+            <!-- Left floating UI layer -->
+            <div class="w-full max-w-[1600px] mx-auto px-8 md:px-16 flex flex-col justify-center h-full relative z-20 content-block pointer-events-none" id="content-block">
                 
-                <div class="text-glow-backer"></div>
+                <div class="max-w-[500px] pointer-events-auto relative">
+                    <!-- Adjusted glow for left alignment -->
+                    <div class="absolute inset-[-50px] bg-radial-gradient from-white/90 to-transparent blur-3xl z-[-1] rounded-full pointer-events-none opacity-80" style="background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 70%);"></div>
 
-                <!-- Eyebrow -->
-                <div class="inline-flex items-center justify-center gap-3 overflow-hidden mb-6">
-                    <span class="w-8 h-px bg-stone-400 eyebrow-line"></span>
-                    <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-stone-500 eyebrow-text">Precision Series</span>
-                    <span class="w-8 h-px bg-stone-400 eyebrow-line"></span>
-                </div>
-                
-                <!-- Headline -->
-                <h1 class="text-[4rem] md:text-[6.5rem] font-bold tracking-tighter leading-[0.85] uppercase" id="main-headline">
-                    The New<br/>
-                    <span class="lettering-transparent font-serif italic font-normal tracking-tight">Standard</span><br/>
-                    Of Ink.
-                </h1>
+                    <!-- Eyebrow -->
+                    <div class="inline-flex items-center justify-start gap-3 overflow-hidden mb-6">
+                        <span class="w-8 h-px bg-stone-400 eyebrow-line"></span>
+                        <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-stone-500 eyebrow-text">Precision Series</span>
+                    </div>
+                    
+                    <!-- Headline -->
+                    <h1 class="text-[4rem] md:text-[6rem] lg:text-[7rem] font-bold tracking-tighter leading-[0.85] uppercase text-stone-900" id="main-headline">
+                        The New<br/>
+                        <span class="lettering-transparent font-serif italic font-normal tracking-tight">Standard</span><br/>
+                        Of Ink.
+                    </h1>
 
-                <!-- Subtitle -->
-                <p class="text-lg font-light text-stone-600 max-w-sm mt-6 leading-relaxed subtitle-text mx-auto">
-                    Engineered for those who craft the future. Fluidity meets absolute control in an architectural body.
-                </p>
+                    <!-- Subtitle -->
+                    <p class="text-base md:text-lg font-light text-stone-600 max-w-sm mt-6 leading-relaxed subtitle-text">
+                        Engineered for those who craft the future. Fluidity meets absolute control in an architectural body.
+                    </p>
 
-                <!-- Buttons -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 button-group w-full max-w-sm mx-auto">
-                    <button class="beam-button w-full sm:w-auto px-8 py-4 rounded-full text-xs font-mono tracking-widest uppercase">
-                        Adquirir
-                    </button>
-                    <button class="secondary-button w-full sm:w-auto px-8 py-4 rounded-full border border-stone-200 text-stone-900 text-xs font-mono tracking-widest uppercase flex items-center justify-center gap-2">
-                        <iconify-icon icon="solar:play-circle-line-duotone"></iconify-icon>
-                        Reel
-                    </button>
+                    <!-- Buttons -->
+                    <div class="flex flex-col sm:flex-row items-center justify-start gap-4 mt-10 button-group w-full">
+                        <button class="beam-button w-full sm:w-auto px-8 py-4 rounded-full text-xs font-mono tracking-widest uppercase shadow-xl">
+                            Adquirir
+                        </button>
+                        <button class="secondary-button w-full sm:w-auto px-8 py-4 rounded-full border border-stone-200 text-stone-900 text-xs font-mono tracking-widest uppercase flex items-center justify-center gap-2 shadow-sm">
+                            <iconify-icon class="text-lg" icon="solar:play-circle-line-duotone"></iconify-icon>
+                            Reel
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -328,14 +330,14 @@
             gsap.set('#pagination-rail', { opacity: 0, x: 20 })
             gsap.set('#scroll-hint', { opacity: 0, y: 20 })
 
-            tlLoad.to('#nav-bar', { y: 0, opacity: 1, duration: 1, delay: 0.2 })
-                  .to('.eyebrow-line', { scaleX: 1, duration: 0.8 }, "-=0.5")
-                  .to('.eyebrow-text', { opacity: 1, duration: 0.8 }, "-=0.6")
-                  .to(headlineText.chars, { y: 0, opacity: 1, duration: 1.2, stagger: 0.02 }, "-=0.4")
-                  .to('.subtitle-text', { opacity: 1, y: 0, duration: 1 }, "-=1")
-                  .to('.button-group button', { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 }, "-=0.8")
-                  .to('#pagination-rail', { opacity: 1, x: 0, duration: 1 }, "-=1")
-                  .to('#scroll-hint', { opacity: 1, y: 0, duration: 1 }, "-=0.8")
+            tlLoad.to('#nav-bar', { y: 0, opacity: 1, duration: 0.6, delay: 0.1 })
+                  .to('.eyebrow-line', { scaleX: 1, duration: 0.5 }, "-=0.2")
+                  .to('.eyebrow-text', { opacity: 1, duration: 0.5 }, "-=0.3")
+                  .to(headlineText.chars, { y: 0, opacity: 1, duration: 0.8, stagger: 0.015 }, "-=0.5")
+                  .to('.subtitle-text', { opacity: 1, y: 0, duration: 0.6 }, "-=0.8")
+                  .to('.button-group button', { opacity: 1, y: 0, duration: 0.6, stagger: 0.1 }, "-=0.6")
+                  .to('#pagination-rail', { opacity: 1, x: 0, duration: 0.8 }, "-=0.8")
+                  .to('#scroll-hint', { opacity: 1, y: 0, duration: 0.8 }, "-=0.8")
 
             // ==========================================
             // 3. Apple-Style Canvas Image Sequence
@@ -430,12 +432,12 @@
 
             // B: Content Parallax & Fading
             // The text pushes up entirely as the video progresses, becoming completely obscured
-            // This ensures the focus flips completely to the video (central piece) mid-scroll.
+            // Fades even faster now (first 15% of the scroll instead of 30%)
             tlScroll.to('#content-block', {
                 y: -150,
                 opacity: 0,
                 filter: "blur(20px)",
-                duration: 0.3, // It fades quickly in the first 30% of scroll
+                duration: 0.15,
                 ease: "power2.in"
             }, 0);
 
