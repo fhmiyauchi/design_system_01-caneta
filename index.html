@@ -101,6 +101,10 @@
         /* ----------------------------------
            GSAP Setup Classes
         ----------------------------------- */
+        .word {
+            display: inline-block;
+            white-space: nowrap; /* Prevents characters from breaking mid-word */
+        }
         .char {
             transform: translateY(110%);
             transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -224,7 +228,7 @@
             <!-- Left floating UI layer -->
             <div class="w-full max-w-[1600px] mx-auto px-8 md:px-16 flex flex-col justify-center h-full relative z-20 content-block pointer-events-none" id="content-block">
                 
-                <div class="max-w-[500px] pointer-events-auto relative">
+                <div class="max-w-[700px] pointer-events-auto relative">
                     <!-- Adjusted glow for left alignment -->
                     <div class="absolute inset-[-50px] bg-radial-gradient from-white/90 to-transparent blur-3xl z-[-1] rounded-full pointer-events-none opacity-80" style="background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 70%);"></div>
 
