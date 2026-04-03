@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Design System Sonet - Premium White Aura</title>
+    
+    <!-- Dependencies -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        aura: {
+                            50: '#FFFFFF',
+                            100: '#F5F5F0',
+                            200: '#EAEAE5',
+                            300: '#D5D5D0',
+                            800: '#2A2A2A',
+                            900: '#1C1C1C',
+                        },
+                    },
+                    animation: {
+                        'spin-slow': 'spin 12s linear infinite',
+                        'marquee': 'marquee 40s linear infinite',
+                        'beam': 'beam 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' }
+                        },
+                        beam: {
+                            '0%': { left: '-100%' },
+                            '40%, 100%': { left: '100%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #FFFFFF;
+            color: #1C1C1C;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ------------------------------------------------------------
+           ANIMATIONS & GLOBAL REVEALS
+        ------------------------------------------------------------ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(2rem);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .text-reveal-wrapper {
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: bottom;
+        }
+        .text-reveal-content {
+            transform: translateY(110%);
+            opacity: 0;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+            display: block;
+        }
+        .reveal-active .text-reveal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+        .delay-500 { transition-delay: 0.5s; }
+        .delay-700 { transition-delay: 0.7s; }
+
+        /* ------------------------------------------------------------
+           PREMIUM EFFECTS
+        ------------------------------------------------------------ */
+        
+        /* Transparent/Outline Lettering */
+        .lettering-transparent {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(28, 28, 28, 0.6);
+            background: linear-gradient(135deg, rgba(28, 28, 28, 1) 0%, rgba(28, 28, 28, 0.1) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        /* Background Grid */
+        .bg-grid {
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        }
+
+        /* Flashlight Effect */
+        .flashlight-card {
+            position: relative;
+            background: #FFFFFF;
+            border: 1px solid #EAEAE5;
+            overflow: hidden;
+        }
+        .flashlight-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                400px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+                rgba(28, 28, 28, 0.06),
+                transparent 40%
+            );
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .flashlight-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Beam Button Shimmer */
+        .btn-beam {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-beam::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-20deg);
+            animation: beam 3s infinite;
+        }
+
+        /* Glass / Floating Nav */
+        .nav-load {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-load.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Carousel Ken Burns effect */
+        .ken-burns {
+            animation: kenburns 10s ease-out forwards;
+        }
+        @keyframes kenburns {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        /* Custom Marquee Mask */
+        .marquee-mask {
+            mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+            -webkit-mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen selection:bg-aura-900 selection:text-white pb-10">
+
+    <!-- Global Grid Background -->
+    <div class="fixed inset-0 bg-grid pointer-events-none z-0"></div>
+
+    <div class="max-w-[1440px] mx-auto border-x border-aura-200 relative bg-white z-10 min-h-screen">
+        
+        <!-- Navigation -->
+        <header class="relative z-50 sticky top-0 bg-white/80 backdrop-blur-xl border-b border-aura-200 nav-load">
+            <div class="flex justify-between items-center px-6 md:px-12 py-5">
+                <div class="flex items-center gap-8">
+                    <a href="#typography" class="text-xs font-mono uppercase tracking-widest hover:text-aura-800/60 transition-colors">Typography</a>
+                    <a href="#colors" class="text-xs font-mono uppercase tracking-widest hover:text-aura-800/60 transition-colors">Colors</a>
+                    <a href="#components" class="text-xs font-mono uppercase tracking-widest hidden md:block hover:text-aura-800/60 transition-colors">Components</a>
+                </div>
+                
+                <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 group cursor-pointer transition-all">
+                    <iconify-icon class="text-2xl group-hover:rotate-180 transition-transform duration-700" icon="solar:star-fall-minimalistic-bold-duotone"></iconify-icon>
+                    <span class="font-bold tracking-tighter text-xl uppercase">Sonet.Sys</span>
+                </div>
+
+                <div class="flex items-center gap-8">
+                    <span class="text-[10px] font-mono text-aura-300 uppercase tracking-widest">v5.0 Final</span>
+                    <button class="w-8 h-8 rounded-full border border-aura-200 flex items-center justify-center hover:bg-aura-900 hover:text-white transition-all">
+                        <iconify-icon icon="solar:hamburger-menu-linear"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 1. HERO SECTION -->
+        <section id="hero" class="relative z-10 grid grid-cols-1 md:grid-cols-12 border-b border-aura-200 min-h-[85vh] overflow-hidden">
+            <!-- Hero Text Side -->
+            <div class="col-span-1 md:col-span-8 border-r border-aura-200 relative p-8 md:p-16 flex flex-col justify-center bg-white/50 backdrop-blur-[2px]">
+                
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-aura-100 border border-aura-200 rounded-full w-max mb-8 reveal delay-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-aura-900 animate-pulse"></span>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-aura-800">Design Engine v5.0</span>
+                </div>
+
+                <h1 class="text-7xl md:text-[8rem] lg:text-[10rem] font-bold tracking-tighter leading-[0.85] uppercase" id="hero-title">
+                    <div class="text-reveal-wrapper"><span class="text-reveal-content delay-200">Ultimate</span></div><br/>
+                    <div class="text-reveal-wrapper"><span class="text-reveal-content delay-300 lettering-transparent">Architect</span></div>
+                </h1>
+
+                <p class="mt-8 text-lg font-sans font-light text-aura-800/70 max-w-xl reveal delay-500 leading-relaxed">
+                    A culmination of architectural clarity and kinetic interaction. Built with <em>white aura</em> aesthetics and precision-engineered motion.
+                </p>
+
+                <div class="mt-12 flex items-center gap-6 reveal delay-700">
+                    <button class="btn-beam px-8 py-4 bg-aura-900 text-white text-xs font-mono uppercase tracking-widest hover:bg-aura-800 transition-colors flex items-center gap-3 shadow-2xl">
+                        GET STARTED <iconify-icon class="text-lg" icon="solar:arrow-right-up-linear"></iconify-icon>
+                    </button>
+                    <div class="group flex items-center gap-4 cursor-pointer">
+                        <div class="w-12 h-12 rounded-full border border-aura-200 flex items-center justify-center group-hover:bg-aura-100 transition-all">
+                            <iconify-icon class="text-xl text-aura-900" icon="solar:play-stream-bold-duotone"></iconify-icon>
+                        </div>
+                        <span class="text-xs font-mono uppercase tracking-widest border-b border-transparent group-hover:border-aura-900 transition-all">View Showcase</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Visual Side -->
+            <div class="col-span-1 md:col-span-4 relative flex flex-col bg-aura-50">
+                <div class="flex-1 relative overflow-hidden group">
+                    <img class="w-full h-full object-cover grayscale opacity-40 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" 
+                         src="https://images.unsplash.com/photo-1600607686527-6fb88b0907c1?q=80&w=800" alt="Architecture" />
+                    <div class="absolute inset-0 bg-white/20 mix-blend-overlay"></div>
+                </div>
+                <div class="flex-1 p-8 border-t border-aura-200 flex flex-col justify-center gap-6 bg-white reveal delay-500">
+                    <div class="flashlight-card p-6 border-none shadow-xl relative cursor-pointer group hover:-translate-y-1 transition-transform">
+                        <iconify-icon class="text-3xl text-aura-200 group-hover:text-aura-900 transition-colors mb-4" icon="solar:layers-minimalistic-bold-duotone"></iconify-icon>
+                        <h3 class="font-serif italic text-2xl mb-2">Kinetic Layers</h3>
+                        <p class="text-xs text-aura-800/60 uppercase tracking-widest font-mono">Exploring depth through space</p>
+                    </div>
+                    <div class="flex justify-between items-center px-2">
+                        <span class="text-[10px] font-mono text-aura-300">01 / Motion</span>
+                        <div class="h-px bg-aura-100 flex-1 mx-4"></div>
+                        <span class="text-[10px] font-mono text-aura-300">Interact</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Infinite Marquee Loop -->
+            <div class="absolute bottom-0 left-0 w-full bg-aura-900 text-white py-4 marquee-mask z-20">
+                <div class="flex whitespace-nowrap overflow-hidden">
+                    <div class="animate-marquee flex items-center min-w-full justify-around shrink-0">
+                        <span class="text-[10px] font-mono uppercase tracking-widest mx-10 flex items-center gap-3"><iconify-icon icon="solar:star-shine-bold-duotone"></iconify-icon> FLUID ANIMATION</span>
+                        <span class="text-[10px] font-mono uppercase tracking-widest mx-10 flex items-center gap-3"><iconify-icon icon="solar:star-shine-bold-duotone"></iconify-icon> PREMIUM AESTHETICS</span>
+                        <span class="text-[10px] font-mono uppercase tracking-widest mx-10 flex items-center gap-3"><iconify-icon icon="solar:star-shine-bold-duotone"></iconify-icon> ARCHITECTURAL GRIDS</span>
+                        <span class="text-[10px] font-mono uppercase tracking-widest mx-10 flex items-center gap-3"><iconify-icon icon="solar:star-shine-bold-duotone"></iconify-icon> INTERACTIVE DESIGN</span>
+                    </div>
+                    <div class="animate-marquee flex items-center min-w-full justify-around shrink-0">
+                        <span class="text-[10px] font-mono uppercase tracking-widest mx-10 flex items-center gap-3"><iconify-icon icon="solar:star-shine-bold-duotone"></iconify-icon> FLUID ANIMATION</span>
+                        <span class="text-[10px] font-mono uppercase tracking-widest mx-10 flex items-center gap-3"><iconify-icon icon="solar:star-shine-bold-duotone"></iconify-icon> PREMIUM AESTHETICS</span>
+                        <span class="text-[10px] font-mono uppercase tracking-widest mx-10 flex items-center gap-3"><iconify-icon icon="solar:star-shine-bold-duotone"></iconify-icon> ARCHITECTURAL GRIDS</span>
+                        <span class="text-[10px] font-mono uppercase tracking-widest mx-10 flex items-center gap-3"><iconify-icon icon="solar:star-shine-bold-duotone"></iconify-icon> INTERACTIVE DESIGN</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <main class="space-y-40 py-32 px-6 md:px-12 relative z-10 bg-white">
+
+            <!-- 2. TYPOGRAPHY -->
+            <section id="typography" class="reveal relative">
+                <div class="flex items-center gap-6 border-b border-aura-200 pb-8 mb-16">
+                    <span class="text-6xl font-serif italic text-aura-200 leading-none">01</span>
+                    <div>
+                        <h2 class="text-3xl font-bold tracking-tighter uppercase">Typography Scale</h2>
+                        <span class="text-[10px] font-mono uppercase text-aura-400 tracking-widest">Font Stacks & Role Specifications</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                    <!-- Font metadata sidebar -->
+                    <div class="lg:col-span-4 space-y-12">
+                        <div class="p-8 border border-aura-200 bg-aura-50 flashlight-card rounded-xl">
+                            <h3 class="text-xs font-mono uppercase tracking-widest text-aura-900 mb-6 border-b border-aura-100 pb-4">Style Strategy</h3>
+                            <ul class="space-y-6 text-sm">
+                                <li class="flex justify-between border-b border-aura-100/50 pb-2">
+                                    <span class="text-aura-400 font-mono text-[10px] uppercase">Primary</span>
+                                    <strong class="font-sans font-bold">Inter (Modern Sans)</strong>
+                                </li>
+                                <li class="flex justify-between border-b border-aura-100/50 pb-2">
+                                    <span class="text-aura-400 font-mono text-[10px] uppercase">Editorial</span>
+                                    <strong class="font-serif italic font-normal">Playfair Display</strong>
+                                </li>
+                                <li class="flex justify-between border-b border-aura-100/50 pb-2">
+                                    <span class="text-aura-400 font-mono text-[10px] uppercase">Technical</span>
+                                    <strong class="font-mono">JetBrains Mono</strong>
+                                </li>
+                                <li class="flex justify-between pb-2">
+                                    <span class="text-aura-400 font-mono text-[10px] uppercase">Strategy</span>
+                                    <strong class="text-right text-xs">CDNs + Range Wghts</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Type Role Table -->
+                    <div class="lg:col-span-8 space-y-16">
+                        <!-- H1 Display -->
+                        <div class="group flex flex-col md:flex-row items-baseline gap-12 border-b border-aura-100 pb-12 hover:bg-aura-50 transition-colors p-4 -mx-4 rounded-xl">
+                            <div class="w-32 shrink-0 font-mono text-[10px] text-aura-300 uppercase tracking-widest leading-relaxed">
+                                H1 Display<br/>Inter / 800<br/>-0.04em
+                            </div>
+                            <div class="flex-1">
+                                <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter group-hover:translate-x-2 transition-transform">Headline</h1>
+                            </div>
+                            <div class="w-24 text-right font-mono text-[10px] text-aura-300">10rem / 0.85</div>
+                        </div>
+
+                        <!-- H2 Editorial -->
+                        <div class="group flex flex-col md:flex-row items-baseline gap-12 border-b border-aura-100 pb-12 hover:bg-aura-50 transition-colors p-4 -mx-4 rounded-xl">
+                            <div class="w-32 shrink-0 font-mono text-[10px] text-aura-300 uppercase tracking-widest leading-relaxed">
+                                H2 Editorial<br/>Playfair / 400<br/>0.01em
+                            </div>
+                            <div class="flex-1">
+                                <h2 class="text-5xl md:text-6xl font-serif italic text-aura-900 group-hover:translate-x-2 transition-transform">Elegant Title</h2>
+                            </div>
+                            <div class="w-24 text-right font-mono text-[10px] text-aura-300">4rem / 1.1</div>
+                        </div>
+
+                        <!-- Body Large -->
+                        <div class="group flex flex-col md:flex-row gap-12 border-b border-aura-100 pb-12 hover:bg-aura-50 transition-colors p-4 -mx-4 rounded-xl">
+                            <div class="w-32 shrink-0 font-mono text-[10px] text-aura-300 uppercase tracking-widest leading-relaxed">
+                                Body-Lg<br/>Inter / 300<br/>0em
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xl font-light text-aura-800 leading-relaxed max-w-2xl">
+                                    Strategic use of white space and weight ranges creates an airy, sophisticated read. 
+                                    Legibility is maintained through generous line heights.
+                                </p>
+                            </div>
+                            <div class="w-24 text-right font-mono text-[10px] text-aura-300">1.25rem / 1.6</div>
+                        </div>
+
+                        <!-- UI Labels -->
+                        <div class="group flex flex-col md:flex-row gap-12 hover:bg-aura-50 transition-colors p-4 -mx-4 rounded-xl">
+                            <div class="w-32 shrink-0 font-mono text-[10px] text-aura-300 uppercase tracking-widest leading-relaxed">
+                                Labels/Meta<br/>JetBrains / 400<br/>0.1em
+                            </div>
+                            <div class="flex-1">
+                                <span class="bg-aura-100 px-3 py-1 font-mono text-xs uppercase tracking-widest text-aura-800 rounded">Component_System_Activated</span>
+                            </div>
+                            <div class="w-24 text-right font-mono text-[10px] text-aura-300">0.75rem / 1</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. COLOR SYSTEM -->
+            <section id="colors" class="reveal relative">
+                <div class="flex items-center gap-6 border-b border-aura-200 pb-8 mb-16">
+                    <span class="text-6xl font-serif italic text-aura-200 leading-none">02</span>
+                    <div>
+                        <h2 class="text-3xl font-bold tracking-tighter uppercase">Color Architecture</h2>
+                        <span class="text-[10px] font-mono uppercase text-aura-400 tracking-widest">Semantic Roles & Contrast Intent</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                    <!-- Aura 900 -->
+                    <div class="group cursor-default reveal">
+                        <div class="h-32 bg-aura-900 border border-aura-200 rounded-2xl group-hover:-translate-y-2 transition-transform shadow-2xl relative overflow-hidden flex items-end p-6">
+                            <span class="text-white font-mono text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">AAA Contrast</span>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-bold text-sm">Stone 900</h4>
+                            <p class="text-[10px] font-mono text-aura-400 uppercase mt-2">#1C1C1C | Role: Text Header</p>
+                        </div>
+                    </div>
+
+                    <!-- Aura 300 -->
+                    <div class="group cursor-default reveal delay-100">
+                        <div class="h-32 bg-aura-300 border border-aura-200 rounded-2xl group-hover:-translate-y-2 transition-transform shadow-2xl relative overflow-hidden flex items-end p-6">
+                            <span class="text-aura-800 font-mono text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">Divider</span>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-bold text-sm">Neutral 300</h4>
+                            <p class="text-[10px] font-mono text-aura-400 uppercase mt-2">#D5D5D0 | Role: Borders</p>
+                        </div>
+                    </div>
+
+                    <!-- Aura 100 -->
+                    <div class="group cursor-default reveal delay-200">
+                        <div class="h-32 bg-aura-100 border border-aura-200 rounded-2xl group-hover:-translate-y-2 transition-transform shadow-2xl relative overflow-hidden flex items-end p-6">
+                            <span class="text-aura-800 font-mono text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">Surface Alt</span>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-bold text-sm">Main Neutral</h4>
+                            <p class="text-[10px] font-mono text-aura-400 uppercase mt-2">#F5F5F0 | Role: Secondary Bg</p>
+                        </div>
+                    </div>
+
+                    <!-- Aura 50 (Pure White) -->
+                    <div class="group cursor-default reveal delay-300">
+                        <div class="h-32 bg-aura-50 border border-aura-200 rounded-2xl group-hover:-translate-y-2 transition-transform shadow-2xl relative overflow-hidden flex items-end p-6">
+                            <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-aura-100/30 to-transparent"></div>
+                            <span class="text-aura-800 font-mono text-[10px] opacity-0 group-hover:opacity-100 transition-opacity relative z-10">Base Layer</span>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-bold text-sm">Pure White</h4>
+                            <p class="text-[10px] font-mono text-aura-400 uppercase mt-2">#FFFFFF | Role: Primary Bg</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Accent -->
+                    <div class="group cursor-default reveal delay-500">
+                        <div class="h-32 bg-transparent border border-aura-200 rounded-2xl group-hover:-translate-y-2 transition-transform shadow-2xl relative overflow-hidden flex items-end p-6">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-aura-900 to-aura-800 animate-pulse opacity-5 group-hover:opacity-10 transition-opacity"></div>
+                            <span class="text-aura-900 font-mono text-[10px] opacity-0 group-hover:opacity-100 transition-opacity relative z-10">Interaction</span>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-bold text-sm">Hover Accent</h4>
+                            <p class="text-[10px] font-mono text-aura-400 uppercase mt-2">Overlay | Role: Focus States</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. UI COMPONENTS -->
+            <section id="components" class="reveal relative">
+                <div class="flex items-center gap-6 border-b border-aura-200 pb-8 mb-16">
+                    <span class="text-6xl font-serif italic text-aura-200 leading-none">03</span>
+                    <div>
+                        <h2 class="text-3xl font-bold tracking-tighter uppercase">UI Components</h2>
+                        <span class="text-[10px] font-mono uppercase text-aura-400 tracking-widest">Interactive Specs & Animations</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                    
+                    <!-- Form Controls -->
+                    <div class="space-y-12">
+                        <div class="flashlight-card p-10 rounded-2xl reveal">
+                            <h3 class="text-xs font-mono uppercase tracking-widest text-aura-900 mb-10 border-b border-aura-50 pb-4">Inputs & Actions</h3>
+                            <div class="space-y-10">
+                                <!-- Inputs -->
+                                <div>
+                                    <label class="block font-mono text-[10px] uppercase text-aura-400 tracking-widest mb-2">Primary Identifier</label>
+                                    <div class="relative group">
+                                        <input type="text" class="w-full bg-transparent border-b border-aura-200 py-3 text-lg focus:outline-none focus:border-aura-900 transition-all peer" placeholder="Type something..." />
+                                        <div class="absolute bottom-0 left-0 h-0.5 bg-aura-900 w-0 peer-focus:w-full transition-all duration-700"></div>
+                                        <iconify-icon class="absolute right-0 bottom-4 text-aura-100 group-hover:text-aura-900 transition-colors" icon="solar:pen-bold-duotone"></iconify-icon>
+                                    </div>
+                                </div>
+                                <!-- Buttons -->
+                                <div class="flex flex-wrap gap-6 pt-4">
+                                    <button class="btn-beam bg-aura-900 text-white px-8 py-4 text-xs font-mono tracking-widest uppercase hover:bg-aura-800 transition-colors shadow-lg">Primary Action</button>
+                                    <button class="border border-aura-900 px-8 py-4 text-xs font-mono tracking-widest uppercase hover:bg-aura-900 hover:text-white transition-all group flex items-center gap-3">
+                                        Secondary <iconify-icon class="group-hover:translate-x-1 transition-transform" icon="solar:arrow-right-linear"></iconify-icon>
+                                    </button>
+                                </div>
+                                <!-- Checkboxes/Toggles -->
+                                <div class="flex items-center justify-between pt-6 border-t border-aura-100/50">
+                                    <span class="text-sm text-aura-800 font-sans">Enable Premium Motion</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" value="" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-aura-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-aura-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-aura-900"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tooltips & Badges -->
+                        <div class="flex gap-4 reveal delay-200">
+                            <span class="px-3 py-1 bg-aura-100 border border-aura-200 text-aura-900 text-[10px] font-mono uppercase tracking-widest rounded-full">Status: Active</span>
+                            <div class="relative group cursor-pointer inline-flex items-center justify-center w-8 h-8 rounded-full bg-aura-900 text-white shadow-xl hover:scale-110 transition-transform">
+                                <iconify-icon icon="solar:info-circle-bold-duotone"></iconify-icon>
+                                <!-- Tooltip content -->
+                                <div class="absolute bottom-full mb-3 bg-aura-900 text-white text-[10px] font-mono tracking-widest uppercase px-3 py-2 rounded pointer-events-none opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all whitespace-nowrap shadow-2xl">
+                                    Architectural Logic
+                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-aura-900 rotate-45"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cards & Spatial Sections -->
+                    <div class="space-y-12">
+                        <div class="h-[500px] border border-aura-200 bg-aura-50 p-6 rounded-2xl relative overflow-hidden group reveal delay-300">
+                            <!-- Background texture Inside card -->
+                            <div class="absolute inset-0 bg-grid opacity-40 z-0"></div>
+                            <div class="absolute -right-20 -top-20 w-80 h-80 bg-white/50 rounded-full blur-[80px] pointer-events-none"></div>
+                            
+                            <div class="relative z-10 h-full flex flex-col justify-between">
+                                <div class="flex justify-between items-start">
+                                    <iconify-icon class="text-5xl text-aura-900/10 group-hover:text-aura-900 transition-colors duration-1000" icon="solar:buildings-bold-duotone"></iconify-icon>
+                                    <button class="w-12 h-12 rounded-full border border-aura-200 bg-white shadow-sm flex items-center justify-center hover:bg-aura-900 hover:text-white transition-all duration-500" onclick="document.getElementById('sonet-modal').classList.add('active')">
+                                        <iconify-icon class="text-2xl" icon="solar:maximize-square-minimalistic-linear"></iconify-icon>
+                                    </button>
+                                </div>
+                                <div class="space-y-6">
+                                    <h4 class="text-4xl font-bold tracking-tighter uppercase leading-none">Spatial Concept<br/>Entity_404</h4>
+                                    <p class="text-sm text-aura-800/60 leading-relaxed max-w-sm">
+                                        Integrating 3D depth, localized grids, and interactive modal triggers for immersive system exploration.
+                                    </p>
+                                    <div class="w-12 h-1 bg-aura-900 w-0 group-hover:w-full transition-all duration-1000 ease-out"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. ICONOGRAPHY -->
+            <section id="icons" class="reveal relative">
+                <div class="flex items-center gap-6 border-b border-aura-200 pb-8 mb-16">
+                    <span class="text-6xl font-serif italic text-aura-200 leading-none">04</span>
+                    <div>
+                        <h2 class="text-3xl font-bold tracking-tighter uppercase">Icon System</h2>
+                        <span class="text-[10px] font-mono uppercase text-aura-400 tracking-widest">Library Assets & Visual Language</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                    <!-- Icon Cards -->
+                    <div class="aspect-square border border-aura-100 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:border-aura-900 group cursor-none">
+                        <iconify-icon class="text-4xl text-aura-200 group-hover:text-aura-900 group-hover:scale-110 transition-all duration-500" icon="solar:palette-2-bold-duotone"></iconify-icon>
+                        <span class="text-[9px] font-mono uppercase text-aura-300 group-hover:text-aura-900 transition-colors">Palette</span>
+                    </div>
+                    <div class="aspect-square border border-aura-100 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:border-aura-900 group reveal delay-100">
+                        <iconify-icon class="text-4xl text-aura-200 group-hover:text-aura-900 group-hover:scale-110 transition-all duration-500" icon="solar:ruler-pen-bold-duotone"></iconify-icon>
+                        <span class="text-[9px] font-mono uppercase text-aura-300 group-hover:text-aura-900 transition-colors">Precision</span>
+                    </div>
+                    <div class="aspect-square border border-aura-100 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:border-aura-900 group reveal delay-200">
+                        <iconify-icon class="text-4xl text-aura-200 group-hover:text-aura-900 group-hover:scale-110 transition-all duration-500" icon="solar:planet-3-bold-duotone"></iconify-icon>
+                        <span class="text-[9px] font-mono uppercase text-aura-300 group-hover:text-aura-900 transition-colors">World</span>
+                    </div>
+                    <div class="aspect-square border border-aura-100 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:border-aura-900 group reveal delay-300">
+                        <iconify-icon class="text-4xl text-aura-200 group-hover:text-aura-900 group-hover:scale-110 transition-all duration-500" icon="solar:shield-keyhole-bold-duotone"></iconify-icon>
+                        <span class="text-[9px] font-mono uppercase text-aura-300 group-hover:text-aura-900 transition-colors">Security</span>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="relative z-50 border-t border-aura-200 bg-white py-20 px-6 md:px-12">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-12">
+                <div class="flex flex-col items-center md:items-start">
+                    <span class="font-serif italic text-3xl mb-2 text-aura-900">Sonet Design System</span>
+                    <span class="text-[10px] font-mono text-aura-300 uppercase tracking-widest">Built for Architectural Immersion</span>
+                </div>
+                <div class="flex flex-col items-center md:items-end">
+                    <div class="flex gap-8 mb-4">
+                        <iconify-icon class="text-2xl text-aura-200 hover:text-aura-900 transition-colors" icon="solar:globus-linear"></iconify-icon>
+                        <iconify-icon class="text-2xl text-aura-200 hover:text-aura-900 transition-colors" icon="solar:mailbox-linear"></iconify-icon>
+                        <iconify-icon class="text-2xl text-aura-200 hover:text-aura-900 transition-colors" icon="solar:share-circle-linear"></iconify-icon>
+                    </div>
+                    <span class="text-xs font-mono text-aura-400">© 2024 Ultimate_Architect. All rights reserved.</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- NATIVE MODAL IMPLEMENTATION -->
+    <div id="sonet-modal" class="fixed inset-0 flex items-center justify-center p-4 z-[9999] invisible opacity-0 transition-all duration-500">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-aura-900/60 backdrop-blur-md cursor-pointer" onclick="document.getElementById('sonet-modal').classList.remove('active')"></div>
+        
+        <!-- Modal Card -->
+        <div class="relative bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden translate-y-12 transition-all duration-700 modal-content">
+            <style>
+                #sonet-modal.active { invisible: visible; opacity: 1; pointer-events: auto; }
+                #sonet-modal.active .modal-content { transform: translateY(0); }
+            </style>
+            
+            <div class="px-8 py-6 border-b border-aura-100 flex justify-between items-center bg-aura-50">
+                <div class="flex items-center gap-3">
+                    <iconify-icon class="text-2xl text-aura-900" icon="solar:notification-lines-remove-bold-duotone"></iconify-icon>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-aura-500">System Notification</span>
+                </div>
+                <button onclick="document.getElementById('sonet-modal').classList.remove('active')" class="text-aura-300 hover:text-aura-900 transition-colors transition-all">
+                    <iconify-icon class="text-2xl" icon="solar:close-square-bold-duotone"></iconify-icon>
+                </button>
+            </div>
+            
+            <div class="p-8 md:p-12 relative">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-aura-100 rounded-bl-full pointer-events-none -z-10"></div>
+                <h4 class="text-4xl font-bold tracking-tighter uppercase mb-6">Interaction required</h4>
+                <p class="text-aura-800/70 font-sans leading-relaxed mb-10">
+                    This modal demonstrates system-level focus. The page context is blurred using backdrop filters, forcing user attention into this spatial container.
+                </p>
+                <div class="flex items-center gap-4">
+                    <button class="bg-aura-900 text-white px-8 py-3 text-xs font-mono tracking-widest uppercase hover:bg-aura-800 transition-colors flex-1" onclick="document.getElementById('sonet-modal').classList.remove('active')">CONFIRM</button>
+                    <button class="border border-aura-200 px-8 py-3 text-xs font-mono tracking-widest uppercase hover:bg-aura-50 transition-colors flex-1" onclick="document.getElementById('sonet-modal').classList.remove('active')">DISMISS</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERACTION SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // 1. Trigger Initial Nav & Hero Animations
+            setTimeout(() => {
+                const nav = document.querySelector('header');
+                if(nav) nav.classList.add('loaded');
+                
+                const heroTitle = document.getElementById('hero-title');
+                if (heroTitle) heroTitle.classList.add('reveal-active');
+            }, 100);
+
+            // 2. Intersection Observer for Scroll Reveals
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // If it contains text reveals, trigger them too
+                        const textWrappers = entry.target.querySelectorAll('.text-reveal-wrapper');
+                        if (textWrappers.length > 0) {
+                            entry.target.classList.add('reveal-active');
+                        }
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            // 3. Flashlight Mouse Tracking
+            const flashlightCards = document.querySelectorAll('.flashlight-card');
+            flashlightCards.forEach(card => {
+                card.onmousemove = function(e) {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                };
+            });
+
+            // 4. Parallax Hero Effect (Optional subtle)
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const heroImg = document.querySelector('#hero img');
+                if(heroImg) {
+                    heroImg.style.transform = `translateY(${scrolled * 0.1}px) scale(${1 + scrolled * 0.0001})`;
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

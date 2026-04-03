@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html class="scroll-smooth antialiased" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Precision Series - The Canvas</title>
+    
+    <!-- External Font Dependencies -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    
+    <!-- External JS Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis/bundled/lenis.min.js"></script>
+    <script src="https://unpkg.com/split-type"></script>
+
+    <!-- Tailwind Config injected from Design System -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],        
+                        serif: ['Playfair Display', 'serif'], 
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        stone: {
+                            50: '#FAFAFA',
+                            100: '#F5F5F0',
+                            200: '#EAEAE5',
+                            300: '#D5D5CD',
+                            400: '#A3A39A',
+                            500: '#7A7A71',
+                            800: '#2A2A2A',
+                            900: '#1C1C1C', 
+                        },
+                        accent: {
+                            500: '#38BDF8', 
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* CSS Reset & Setup */
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            color: #1C1C1C;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ----------------------------------
+           Canvas Fullscreen Fix
+        ----------------------------------- */
+        #sequence-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            /* Using CSS mix-blend-mode to make the pure white background of the pen blend with the body #FFFFFF */
+            mix-blend-mode: darken;
+            pointer-events: none;
+        }
+
+        /* Optional Subtle Gradient so text on top pops */
+        .canvas-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(255,255,255,0.7) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ----------------------------------
+           GSAP Setup Classes
+        ----------------------------------- */
+        .char {
+            transform: translateY(110%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ----------------------------------
+           Aesthetic Components (from DS1)
+        ----------------------------------- */
+        
+        .lettering-transparent {
+            color: transparent;
+            -webkit-text-stroke: 1.5px rgba(28, 28, 28, 0.9);
+            position: relative;
+        }
+
+        .beam-button {
+            position: relative;
+            overflow: hidden;
+            background: #1C1C1C;
+            color: #FFFFFF;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .beam-button::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg);
+            animation: beam 3s infinite;
+        }
+        .beam-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(28, 28, 28, 0.3);
+        }
+
+        .secondary-button {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+        }
+        .secondary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            background: #FFFFFF;
+        }
+
+        @keyframes beam {
+            0% { left: -100%; }
+            50%, 100% { left: 200%; }
+        }
+
+        /* ----------------------------------
+           Layout Control
+        ----------------------------------- */
+        .scroll-trigger-container {
+            /* Height dictates how long the scroll takes */
+            height: 400vh; 
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-pin {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none; /* Let pointer events pass to scrolling */
+        }
+        
+        .content-block {
+            pointer-events: auto; /* Re-enable clicks strictly on the content box */
+        }
+
+        /* Ambient Glow behind text */
+        .text-glow-backer {
+            position: absolute;
+            inset: -50px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+            border-radius: 50%;
+            filter: blur(20px);
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- Minimalist Navbar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 md:px-16 py-6 mix-blend-difference text-white" id="nav-bar">
+        <div class="font-bold tracking-tighter text-2xl uppercase flex items-center justify-center gap-2 pointer-events-auto cursor-pointer">
+            <iconify-icon class="text-2xl" icon="solar:pen-new-round-bold-duotone"></iconify-icon>
+        </div>
+        
+        <nav class="hidden md:flex gap-10 font-mono text-[10px] uppercase tracking-widest text-stone-300 pointer-events-auto">
+            <a href="#" class="hover:text-white transition-colors">Precisão</a>
+            <a href="#" class="hover:text-white transition-colors">Design</a>
+            <a href="#" class="hover:text-white transition-colors">Especs</a>
+        </nav>
+
+        <button class="flex items-center justify-center hover:text-stone-300 transition-colors pointer-events-auto">
+            <iconify-icon class="text-xl" icon="solar:bag-3-outline"></iconify-icon>
+        </button>
+    </header>
+
+    <!-- The Mighty Canvas -->
+    <canvas id="sequence-canvas"></canvas>
+    <div class="canvas-overlay"></div>
+
+    <!-- Main Scroll Track for GSAP Scrubbing -->
+    <div class="scroll-trigger-container">
+        
+        <!-- The Pinned Hero Section Overlaying the Canvas -->
+        <section class="hero-pin">
+            
+            <!-- Centered floating UI layer -->
+            <div class="w-full max-w-[800px] mx-auto px-8 flex flex-col items-center text-center relative z-20 content-block" id="content-block">
+                
+                <div class="text-glow-backer"></div>
+
+                <!-- Eyebrow -->
+                <div class="inline-flex items-center justify-center gap-3 overflow-hidden mb-6">
+                    <span class="w-8 h-px bg-stone-400 eyebrow-line"></span>
+                    <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-stone-500 eyebrow-text">Precision Series</span>
+                    <span class="w-8 h-px bg-stone-400 eyebrow-line"></span>
+                </div>
+                
+                <!-- Headline -->
+                <h1 class="text-[4rem] md:text-[6.5rem] font-bold tracking-tighter leading-[0.85] uppercase" id="main-headline">
+                    The New<br/>
+                    <span class="lettering-transparent font-serif italic font-normal tracking-tight">Standard</span><br/>
+                    Of Ink.
+                </h1>
+
+                <!-- Subtitle -->
+                <p class="text-lg font-light text-stone-600 max-w-sm mt-6 leading-relaxed subtitle-text mx-auto">
+                    Engineered for those who craft the future. Fluidity meets absolute control in an architectural body.
+                </p>
+
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 button-group w-full max-w-sm mx-auto">
+                    <button class="beam-button w-full sm:w-auto px-8 py-4 rounded-full text-xs font-mono tracking-widest uppercase">
+                        Adquirir
+                    </button>
+                    <button class="secondary-button w-full sm:w-auto px-8 py-4 rounded-full border border-stone-200 text-stone-900 text-xs font-mono tracking-widest uppercase flex items-center justify-center gap-2">
+                        <iconify-icon icon="solar:play-circle-line-duotone"></iconify-icon>
+                        Reel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Global Scroll Hint (Bottom Center) -->
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3" id="scroll-hint">
+                <span class="font-mono text-[9px] uppercase tracking-widest text-stone-600">Scroll Contextual</span>
+                <div class="w-px h-8 bg-stone-300 overflow-hidden relative">
+                    <div class="absolute inset-0 bg-stone-900 animate-[translateY_2s_ease-in-out_infinite]"></div>
+                </div>
+            </div>
+
+            <!-- Progress Rail -->
+            <div class="absolute right-10 top-1/2 -translate-y-1/2 hidden xl:flex flex-col items-center gap-4 z-50 pointer-events-none" id="pagination-rail">
+                <span class="font-serif italic text-stone-400 text-sm">01</span>
+                <div class="w-px h-24 bg-stone-300 relative overflow-hidden rounded-full">
+                    <!-- Scroll Progress inside Rail -->
+                    <div class="absolute top-0 left-0 w-full bg-stone-900 rounded-full" id="scroll-progress" style="height: 0%;"></div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- Padding section for after the scroll -->
+    <section class="min-h-screen bg-stone-50 flex flex-col items-center justify-center border-t border-stone-200 relative z-50 p-8 text-center">
+        <iconify-icon class="text-4xl text-stone-300 mb-6" icon="solar:check-circle-line-duotone"></iconify-icon>
+        <h2 class="text-3xl md:text-5xl font-serif italic text-stone-900 mb-4">Arquitetura de Canvas Concluída</h2>
+        <p class="font-mono text-[10px] uppercase tracking-widest text-stone-500 max-w-sm">A sequência de imagens garantiu interpolação de quadros perfeita independente do hardware decoding nativo.</p>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // ==========================================
+            // 1. Smooth Scrolling Setup (Lenis)
+            // ==========================================
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+                direction: 'vertical', 
+                gestureDirection: 'vertical', 
+                smooth: true,
+                mouseMultiplier: 1,
+            })
+
+            function raf(time) {
+                lenis.raf(time)
+                requestAnimationFrame(raf)
+            }
+            requestAnimationFrame(raf)
+
+            // Integrate Lenis with GSAP ScrollTrigger
+            lenis.on('scroll', ScrollTrigger.update)
+            gsap.ticker.add((time)=>{
+              lenis.raf(time * 1000)
+            })
+            gsap.ticker.lagSmoothing(0)
+
+            // ==========================================
+            // 2. Initial UI Animation (GSAP)
+            // ==========================================
+            const headlineText = new SplitType('#main-headline', { types: 'lines,words,chars' })
+            const tlLoad = gsap.timeline({ defaults: { ease: 'power4.out' } })
+            
+            gsap.set('#nav-bar', { y: -50, opacity: 0 })
+            gsap.set('.eyebrow-line', { scaleX: 0, transformOrigin: 'center' })
+            gsap.set('.eyebrow-text', { opacity: 0 })
+            gsap.set(headlineText.chars, { y: 100, opacity: 0 })
+            gsap.set('.subtitle-text', { opacity: 0, y: 20 })
+            gsap.set('.button-group button', { opacity: 0, y: 20 })
+            gsap.set('#pagination-rail', { opacity: 0, x: 20 })
+            gsap.set('#scroll-hint', { opacity: 0, y: 20 })
+
+            tlLoad.to('#nav-bar', { y: 0, opacity: 1, duration: 1, delay: 0.2 })
+                  .to('.eyebrow-line', { scaleX: 1, duration: 0.8 }, "-=0.5")
+                  .to('.eyebrow-text', { opacity: 1, duration: 0.8 }, "-=0.6")
+                  .to(headlineText.chars, { y: 0, opacity: 1, duration: 1.2, stagger: 0.02 }, "-=0.4")
+                  .to('.subtitle-text', { opacity: 1, y: 0, duration: 1 }, "-=1")
+                  .to('.button-group button', { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 }, "-=0.8")
+                  .to('#pagination-rail', { opacity: 1, x: 0, duration: 1 }, "-=1")
+                  .to('#scroll-hint', { opacity: 1, y: 0, duration: 1 }, "-=0.8")
+
+            // ==========================================
+            // 3. Apple-Style Canvas Image Sequence
+            // ==========================================
+            const canvas = document.getElementById("sequence-canvas");
+            const context = canvas.getContext("2d");
+            
+            // Canvas Sizing to Window (Simulation of object-fit: cover)
+            let windowWidth, windowHeight;
+            function resizeCanvas() {
+                windowWidth = window.innerWidth;
+                windowHeight = window.innerHeight;
+                canvas.width = windowWidth;
+                canvas.height = windowHeight;
+                render(); // Always render current frame on resize
+            }
+            window.addEventListener('resize', resizeCanvas);
+
+            // Sequence Data
+            const frameCount = 121;
+            const currentFrame = index => (
+                `./assets/raw_files/video_frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`
+            );
+
+            const images = [];
+            const sequence = { frame: 0 };
+
+            // Preload all images synchronously for immediate availability
+            for (let i = 0; i < frameCount; i++) {
+                const img = new Image();
+                img.src = currentFrame(i);
+                images.push(img);
+            }
+
+            // Central Render Function
+            function render() {
+                if (images[sequence.frame] && images[sequence.frame].complete) {
+                    const img = images[sequence.frame];
+                    // object-fit: cover logic for canvas
+                    const imgRatio = img.width / img.height;
+                    const canvasRatio = canvas.width / canvas.height;
+                    let renderWidth, renderHeight, xConfig, yConfig;
+
+                    if (canvasRatio > imgRatio) {
+                        // Fit to width
+                        renderWidth = canvas.width;
+                        renderHeight = canvas.width / imgRatio;
+                        xConfig = 0;
+                        yConfig = (canvas.height - renderHeight) / 2;
+                    } else {
+                        // Fit to height
+                        renderWidth = canvas.height * imgRatio;
+                        renderHeight = canvas.height;
+                        xConfig = (canvas.width - renderWidth) / 2;
+                        yConfig = 0;
+                    }
+
+                    // Clear and Draw Frame
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.drawImage(img, xConfig, yConfig, renderWidth, renderHeight);
+                }
+            }
+
+            // Ensure first frame renders on load
+            images[0].onload = () => {
+                resizeCanvas();
+            };
+
+            // ==========================================
+            // 4. GSAP ScrollTrigger Sequence Timeline
+            // ==========================================
+            const tlScroll = gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".scroll-trigger-container",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1, // Fluid scrubbing (minimal catchup smoothing)
+                    onUpdate: (self) => {
+                        gsap.set('#scroll-progress', { height: `${self.progress * 100}%` });
+                    }
+                }
+            });
+
+            // A: Animate the Image Sequence Frame index
+            tlScroll.to(sequence, {
+                frame: frameCount - 1,
+                snap: "frame",
+                ease: "none",
+                duration: 1,
+                onUpdate: render // Render the new frame every time the GSAP tween updates the object
+            }, 0);
+
+            // B: Content Parallax & Fading
+            // The text pushes up entirely as the video progresses, becoming completely obscured
+            // This ensures the focus flips completely to the video (central piece) mid-scroll.
+            tlScroll.to('#content-block', {
+                y: -150,
+                opacity: 0,
+                filter: "blur(20px)",
+                duration: 0.3, // It fades quickly in the first 30% of scroll
+                ease: "power2.in"
+            }, 0);
+
+            // C: Hide Scroll Hint immediately on scroll start
+            tlScroll.to('#scroll-hint', { opacity: 0, duration: 0.05 }, 0);
+            
+            // Run sizing once to initialize
+            resizeCanvas();
+        });
+    </script>
+</body>
+</html>

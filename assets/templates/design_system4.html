@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html class="scroll-smooth antialiased" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Design System v4 - Glass & Light</title>
+    
+    <!-- Dependencies -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <!-- Editorial & Modern Geometry Pairings -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;600&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],          // Geometric, wide
+                        serif: ['Instrument Serif', 'serif'],    // High contrast editorial
+                        mono: ['Geist Mono', 'monospace'],       // Technical
+                    },
+                    colors: {
+                        glass: {
+                            50: '#FFFFFF',
+                            100: '#F9F9F9',
+                            200: '#F2F2F2',
+                            300: '#E5E5E5',
+                            400: '#CCCCCC',
+                            500: '#999999',
+                            800: '#333333',
+                            900: '#111111',
+                        },
+                    },
+                    animation: {
+                        'shimmer': 'shimmer 2.5s ease-in-out infinite',
+                        'marquee': 'marquee 30s linear infinite',
+                        'shift-gradient': 'shift-gradient 10s ease infinite',
+                    },
+                    keyframes: {
+                        shimmer: {
+                            '0%': { transform: 'translateX(-150%) skewX(-15deg)' },
+                            '40%, 100%': { transform: 'translateX(250%) skewX(-15deg)' }
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' }
+                        },
+                        'shift-gradient': {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #FFFFFF;
+            color: #111111;
+            overflow-x: hidden;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* ------------------------------------------------------------
+           AESTHETIC FOUNDATIONS: GRID & LINES
+        ------------------------------------------------------------ */
+        .struct-line-v { width: 1px; height: 100%; background: #E5E5E5; position: absolute; top: 0; z-index: 10; }
+        .struct-line-h { height: 1px; width: 100%; background: #E5E5E5; position: absolute; left: 0; z-index: 10; }
+
+        .line-animate-v { transform-origin: top; transform: scaleY(0); transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1); }
+        .line-animate-h { transform-origin: left; transform: scaleX(0); transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1); }
+        .loaded .line-animate-v { transform: scaleY(1); }
+        .loaded .line-animate-h { transform: scaleX(1); }
+
+        /* ------------------------------------------------------------
+           CORE ANIMATIONS (.reveal, .text-reveal)
+        ------------------------------------------------------------ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .text-reveal-wrapper {
+            overflow: hidden;
+            display: inline-flex;
+            vertical-align: bottom;
+        }
+        .text-reveal-content {
+            transform: translateY(105%);
+            opacity: 0;
+            transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.8s ease;
+            display: block;
+        }
+        .reveal-active .text-reveal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+        .delay-500 { transition-delay: 0.5s; }
+        .delay-700 { transition-delay: 0.7s; }
+
+        /* ------------------------------------------------------------
+           COMPONENTS (Iridescence, Beams, Flashlights)
+        ------------------------------------------------------------ */
+        
+        /* 1. Transparent Hollow Lettering (Iridescent Mask) */
+        .lettering-hollow {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(17, 17, 17, 0.8);
+            position: relative;
+        }
+        /* Animated gradient inside the hollow text */
+        .lettering-hollow-iridescent {
+            color: transparent;
+            -webkit-text-stroke: 0.5px rgba(17, 17, 17, 0.2);
+            background: linear-gradient(270deg, #111111, #999999, #111111, #CCCCCC);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shift-gradient 8s ease infinite;
+        }
+
+        /* 2. Marquee Mask */
+        .marquee-mask {
+            mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+        }
+
+        /* 3. Beam Button (Minimalist Version) */
+        .btn-beam {
+            position: relative;
+            overflow: hidden;
+            background: #111111;
+            color: #FFFFFF;
+            transition: transform 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .btn-beam::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 30%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 3s infinite;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .btn-beam:hover {
+            transform: scale(0.98);
+        }
+
+        /* 4. Flashlight Card (Pill / Sharp geometries) */
+        .flashlight-card {
+            background: #FFFFFF;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.4s;
+        }
+        .flashlight-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                500px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+                rgba(17, 17, 17, 0.05),
+                transparent 40%
+            );
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .flashlight-card:hover::before {
+            opacity: 1;
+        }
+
+        /* 5. Extreme Minimalist Inputs */
+        .input-glass {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #E5E5E5;
+            padding: 16px 0;
+            border-radius: 0;
+            transition: border-color 0.4s;
+            box-shadow: none !important;
+        }
+        .input-glass:focus {
+            outline: none;
+            border-bottom-color: #111111;
+        }
+
+        /* 6. Frost Glass Modal */
+        #glass-modal {
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            backdrop-filter: blur(0px);
+        }
+        #glass-modal.active {
+            visibility: visible;
+            opacity: 1;
+            backdrop-filter: blur(20px);
+            z-index: 9999;
+        }
+        #glass-modal .modal-panel {
+            opacity: 0;
+            transform: scale(1.05) translateY(10px);
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1) 0.1s;
+        }
+        #glass-modal.active .modal-panel {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    </style>
+</head>
+
+<body class="selection:bg-glass-900 selection:text-white pb-20 page-container relative">
+
+    <!-- Structural Grid Lines -->
+    <div class="fixed w-full max-w-[1440px] h-screen left-1/2 -translate-x-1/2 pointer-events-none z-0">
+        <div class="struct-line-v left-0 line-animate-v delay-[200ms]"></div>
+        <div class="struct-line-v left-1/4 line-animate-v delay-[400ms] opacity-30 hidden md:block"></div>
+        <div class="struct-line-v left-1/2 line-animate-v delay-[600ms] opacity-30"></div>
+        <div class="struct-line-v right-1/4 line-animate-v delay-[400ms] opacity-30 hidden md:block"></div>
+        <div class="struct-line-v right-0 line-animate-v delay-[200ms]"></div>
+    </div>
+
+    <!-- Layout Wrapper -->
+    <div class="max-w-[1440px] mx-auto relative z-10 min-h-screen flex flex-col bg-transparent">
+        
+        <!-- Header Navigation -->
+        <header class="py-8 px-6 md:px-12 flex justify-between items-center reveal delay-300 mix-blend-difference text-white">
+            <div class="font-bold tracking-tighter text-xl flex items-center gap-2">
+                <iconify-icon class="text-2xl" icon="solar:align-bottom-bold-duotone"></iconify-icon>
+                GLSS_SYS
+            </div>
+            
+            <nav class="hidden md:flex gap-12 font-sans text-xs font-bold uppercase tracking-[0.2em]">
+                <a href="#typography" class="hover:opacity-50 transition-opacity">Type</a>
+                <a href="#colors" class="hover:opacity-50 transition-opacity">Color</a>
+                <a href="#components" class="hover:opacity-50 transition-opacity">Interface</a>
+            </nav>
+
+            <button class="w-10 h-10 border border-white rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors">
+                <iconify-icon icon="solar:hamburger-menu-linear"></iconify-icon>
+            </button>
+        </header>
+
+        <!-- 1. HERO SECTION -->
+        <section class="flex-1 flex flex-col justify-center px-6 md:px-12 py-20 relative min-h-[85vh]">
+            
+            <div class="border border-glass-200 px-4 py-2 w-max mb-12 flex items-center gap-3 backdrop-blur-sm reveal delay-500 rounded-full">
+                <iconify-icon class="text-glass-500" icon="solar:cpu-linear"></iconify-icon>
+                <span class="text-[10px] font-mono uppercase tracking-widest text-glass-800">Engine v4 - Minimalist Run</span>
+            </div>
+
+            <!-- Absolute pure white background emphasis through transparent text -->
+            <h1 class="text-6xl md:text-[8rem] lg:text-[12rem] font-black tracking-tighter leading-[0.8] uppercase" id="hero-heading">
+                <div class="text-reveal-wrapper"><span class="text-reveal-content delay-[600ms] lettering-hollow">Lucid</span></div><br/>
+                <div class="text-reveal-wrapper"><span class="text-reveal-content delay-[800ms] lettering-hollow-iridescent">Visions</span></div>
+            </h1>
+
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-12 gap-8 items-end reveal delay-1000">
+                <div class="md:col-span-6 lg:col-span-4">
+                    <p class="text-lg font-mono text-glass-500 leading-relaxed font-light">
+                        A study in absence. Using strict white space, rigid grid systems, and iridescent masked kinetics to define structure.
+                    </p>
+                </div>
+                
+                <div class="md:col-span-6 lg:col-span-8 flex justify-start md:justify-end gap-6">
+                    <button class="btn-beam px-10 py-5 text-xs font-sans font-bold uppercase tracking-[0.2em] rounded-full">
+                        Initialize Core
+                    </button>
+                    <button class="w-16 h-16 border border-glass-300 rounded-full flex items-center justify-center hover:bg-glass-100 transition-colors">
+                        <iconify-icon class="text-2xl text-glass-900" icon="solar:play-bold-duotone"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Structural Base Line -->
+            <div class="struct-line-h bottom-0 line-animate-h delay-[1200ms]"></div>
+            
+            <!-- Infinite Marquee Technical Strip -->
+            <div class="absolute bottom-0 left-0 w-full bg-glass-100/50 backdrop-blur-sm border-t border-glass-200 py-3 marquee-mask z-20 reveal delay-[1400ms]">
+                <div class="flex whitespace-nowrap overflow-hidden">
+                    <div class="animate-marquee flex items-center min-w-full justify-around shrink-0 text-glass-400">
+                        <span class="text-[10px] font-mono uppercase tracking-[0.2em] mx-10">Glass Architecture - Active</span>
+                        <span class="text-[10px] font-mono uppercase tracking-[0.2em] mx-10">Minimalist Protocols -> running</span>
+                        <span class="text-[10px] font-mono uppercase tracking-[0.2em] mx-10">White Space Metric :: Absolute</span>
+                    </div>
+                     <div class="animate-marquee flex items-center min-w-full justify-around shrink-0 text-glass-400">
+                        <span class="text-[10px] font-mono uppercase tracking-[0.2em] mx-10">Glass Architecture - Active</span>
+                        <span class="text-[10px] font-mono uppercase tracking-[0.2em] mx-10">Minimalist Protocols -> running</span>
+                        <span class="text-[10px] font-mono uppercase tracking-[0.2em] mx-10">White Space Metric :: Absolute</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main class="py-40 relative z-10 px-6 md:px-12 bg-white/50 backdrop-blur-xl">
+
+            <!-- 2. TYPOGRAPHY -->
+            <section id="typography" class="reveal pt-20">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-20">
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none">Typographic<br/>Matrix</h2>
+                    <div class="font-mono text-[10px] uppercase text-glass-400 mt-6 md:mt-0 tracking-[0.2em] text-left md:text-right">
+                        Outfit (Sans) / Instrument Serif<br/>High contrast spatial pairing
+                    </div>
+                </div>
+
+                <div class="space-y-0 border-t border-glass-200">
+                    <!-- H1 / Display -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 py-12 border-b border-glass-200 group hover:bg-glass-50 transition-colors">
+                        <div class="md:col-span-3">
+                            <span class="text-[9px] font-mono uppercase tracking-[0.2em] text-glass-500 block mb-2">Display H1 // Outfit 900</span>
+                        </div>
+                        <div class="md:col-span-7">
+                            <h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase group-hover:pl-4 transition-all duration-500">Massive.</h1>
+                        </div>
+                        <div class="md:col-span-2 text-left md:text-right font-mono text-[10px] text-glass-400">8rem / 0.8em</div>
+                    </div>
+
+                    <!-- Editorial Serifs -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 py-12 border-b border-glass-200 group hover:bg-glass-50 transition-colors">
+                        <div class="md:col-span-3">
+                            <span class="text-[9px] font-mono uppercase tracking-[0.2em] text-glass-500 block mb-2">Editorial H2 // Inst. Serif</span>
+                        </div>
+                        <div class="md:col-span-7">
+                            <h2 class="text-5xl md:text-7xl font-serif italic text-glass-900 group-hover:pl-4 transition-all duration-500">Elegant Tension</h2>
+                        </div>
+                        <div class="md:col-span-2 text-left md:text-right font-mono text-[10px] text-glass-400">4.5rem / 1.1em</div>
+                    </div>
+
+                    <!-- Body Content -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 py-12 border-b border-glass-200 group hover:bg-glass-50 transition-colors">
+                        <div class="md:col-span-3">
+                            <span class="text-[9px] font-mono uppercase tracking-[0.2em] text-glass-500 block mb-2">Body Lg // Outfit 300</span>
+                        </div>
+                        <div class="md:col-span-7">
+                            <p class="text-xl md:text-3xl font-light text-glass-800 leading-[1.6] max-w-3xl">
+                                Long form reading requires breathable metrics. The wide geometric structure of this sans-serif enforces a technical yet highly readable aesthetic.
+                            </p>
+                        </div>
+                        <div class="md:col-span-2 text-left md:text-right font-mono text-[10px] text-glass-400">1.875rem / 1.6em</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. COLOR SYSTEM -->
+            <section id="colors" class="reveal pt-40">
+                <div class="flex flex-col justify-between items-start mb-20">
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none">Monochrome<br/>Spectrum</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Base White -->
+                    <div class="group cursor-crosshair reveal delay-100">
+                        <div class="aspect-square bg-glass-50 border border-glass-200 flex flex-col justify-between p-6 shadow-sm group-hover:shadow-xl transition-shadow">
+                            <span class="font-mono text-[10px] uppercase text-glass-400 tracking-[0.2em]">Base Layer</span>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-wider text-sm mb-1">Pure Void</h4>
+                                <p class="font-mono text-[10px] text-glass-500">Hex #FFFFFF</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Surface Lines -->
+                    <div class="group cursor-crosshair reveal delay-200">
+                        <div class="aspect-square bg-glass-200 border border-glass-300 flex flex-col justify-between p-6 shadow-sm group-hover:shadow-xl transition-shadow">
+                            <span class="font-mono text-[10px] uppercase text-glass-500 tracking-[0.2em]">Surface Alt</span>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-wider text-sm mb-1">Structural Gray</h4>
+                                <p class="font-mono text-[10px] text-glass-500">Hex #F2F2F2</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Borders -->
+                    <div class="group cursor-crosshair reveal delay-300">
+                        <div class="aspect-square bg-glass-400 border border-glass-500 flex flex-col justify-between p-6 shadow-sm group-hover:shadow-xl transition-shadow">
+                            <span class="font-mono text-[10px] uppercase text-glass-800 tracking-[0.2em]">Divider</span>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-wider text-sm mb-1">Grid lines</h4>
+                                <p class="font-mono text-[10px] text-glass-800">Hex #CCCCCC</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ink -->
+                    <div class="group cursor-crosshair reveal delay-500">
+                        <div class="aspect-square bg-glass-900 border border-glass-900 flex flex-col justify-between p-6 shadow-xl group-hover:translate-y-2 transition-transform">
+                            <span class="font-mono text-[10px] uppercase text-glass-400 tracking-[0.2em]">Primary Ink</span>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-wider text-sm mb-1 text-white">Deep Black</h4>
+                                <p class="font-mono text-[10px] text-glass-500">Hex #111111</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. UI COMPONENTS -->
+            <section id="components" class="reveal pt-40">
+                <div class="flex flex-col justify-between items-start mb-20 border-b border-glass-200 pb-8">
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none">Interactive<br/>Modules</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    
+                    <!-- Form & Actions -->
+                    <div class="lg:col-span-5 space-y-12">
+                        <!-- Inputs -->
+                        <div class="flashlight-card p-10 border border-glass-200 reveal">
+                            <h3 class="text-[10px] font-mono font-bold uppercase tracking-[0.2em] mb-12 text-glass-500">Input Data</h3>
+                            
+                            <div class="space-y-10 relative z-10">
+                                <div class="relative group">
+                                    <input type="text" class="input-glass w-full text-2xl font-light font-serif italic" placeholder="Enter identifier..." />
+                                </div>
+                                <div class="relative group">
+                                    <input type="password" class="input-glass w-full text-2xl font-light font-serif italic" placeholder="Auth token..." />
+                                </div>
+                                
+                                <div class="flex gap-4 pt-4">
+                                    <button class="btn-beam px-10 py-5 text-[10px] font-sans font-bold tracking-[0.2em] uppercase w-full">
+                                        Authenticate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Badges/Tags -->
+                        <div class="flex flex-wrap gap-4 reveal delay-200">
+                            <span class="border border-glass-300 rounded-full px-5 py-2 text-[9px] font-mono uppercase tracking-[0.2em] text-glass-500 hover:bg-glass-900 hover:text-white hover:border-glass-900 transition-colors cursor-pointer">Module Ready</span>
+                            <span class="bg-glass-100 rounded-full px-5 py-2 text-[9px] font-mono uppercase tracking-[0.2em] text-glass-400 line-through">Deprecated</span>
+                            <span class="bg-glass-900 text-white rounded-full px-5 py-2 text-[9px] font-mono uppercase tracking-[0.2em] flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Active
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Extreme Cards -->
+                    <div class="lg:col-span-7">
+                        <!-- Extreme Pill Card -->
+                        <div class="flashlight-card border border-glass-200 rounded-[3rem] p-10 md:p-16 h-full flex flex-col justify-center items-center text-center reveal delay-300 group hover:border-glass-400">
+                            
+                            <div class="w-24 h-24 rounded-full border border-glass-200 flex items-center justify-center mb-10 group-hover:bg-glass-900 group-hover:text-white transition-colors duration-500">
+                                <iconify-icon class="text-4xl" icon="solar:maximize-square-minimalistic-line-duotone"></iconify-icon>
+                            </div>
+
+                            <h4 class="text-4xl font-serif italic text-glass-900 mb-6 group-hover:tracking-wider transition-all duration-500">Glass Modal Trigger</h4>
+                            <p class="font-light text-glass-500 leading-relaxed max-w-sm mb-12">
+                                Integrating extreme geometries (fully rounded pills) with precision flashlight tracking. Click to test the backdrop filter logic.
+                            </p>
+
+                            <button class="border-b border-glass-900 pb-1 text-[10px] font-mono font-bold tracking-[0.2em] uppercase hover:text-glass-500 transition-colors z-10" onclick="document.getElementById('glass-modal').classList.add('active')">
+                                Launch Process
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 5. ICONOGRAPHY -->
+            <section id="icons" class="reveal pt-40 border-t border-glass-200 mt-40">
+                <div class="flex flex-col justify-between items-start mb-20">
+                    <h2 class="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none">Abstract<br/>Symbology</h2>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-0 border-t border-l border-glass-200 relative">
+                    <!-- Icon cells with sharp borders forming a grid inside the grid -->
+                    <div class="aspect-square border-r border-b border-glass-200 flex items-center justify-center hover:bg-glass-50 transition-colors group">
+                        <iconify-icon class="text-3xl text-glass-400 group-hover:text-glass-900 group-hover:scale-125 transition-transform duration-500" icon="solar:box-minimalistic-bold-duotone"></iconify-icon>
+                    </div>
+                    <div class="aspect-square border-r border-b border-glass-200 flex items-center justify-center hover:bg-glass-50 transition-colors group">
+                        <iconify-icon class="text-3xl text-glass-400 group-hover:text-glass-900 group-hover:scale-125 transition-transform duration-500" icon="solar:programming-bold-duotone"></iconify-icon>
+                    </div>
+                    <div class="aspect-square border-r border-b border-glass-200 flex items-center justify-center hover:bg-glass-50 transition-colors group">
+                        <iconify-icon class="text-3xl text-glass-400 group-hover:text-glass-900 group-hover:scale-125 transition-transform duration-500" icon="solar:ruler-pen-bold-duotone"></iconify-icon>
+                    </div>
+                    <div class="aspect-square border-r border-b border-glass-200 flex items-center justify-center hover:bg-glass-50 transition-colors group">
+                        <iconify-icon class="text-3xl text-glass-400 group-hover:text-glass-900 group-hover:scale-125 transition-transform duration-500" icon="solar:layers-bold-duotone"></iconify-icon>
+                    </div>
+                     <div class="aspect-square border-r border-b border-glass-200 flex items-center justify-center hover:bg-glass-50 transition-colors group">
+                        <iconify-icon class="text-3xl text-glass-400 group-hover:text-glass-900 group-hover:scale-125 transition-transform duration-500" icon="solar:radar-bold-duotone"></iconify-icon>
+                    </div>
+                     <div class="aspect-square border-r border-b border-glass-200 flex items-center justify-center hover:bg-glass-50 transition-colors group">
+                        <iconify-icon class="text-3xl text-glass-400 group-hover:text-glass-900 group-hover:scale-125 transition-transform duration-500" icon="solar:cpu-bold-duotone"></iconify-icon>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="py-12 px-6 md:px-12 mt-auto border-t border-glass-200 bg-white relative z-10 w-full flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="font-bold tracking-tighter text-xl uppercase">GLSS_SYS_v4</div>
+            <div class="font-mono text-[9px] uppercase tracking-[0.3em] text-glass-400 text-center">
+                Absolute Minimalism<br/>2024
+            </div>
+        </footer>
+    </div>
+
+    <!-- FROST GLASS MODAL -->
+    <div id="glass-modal" class="fixed inset-0 flex items-center justify-center p-4">
+        <!-- Close trigger overlay -->
+        <div class="absolute inset-0 cursor-pointer" onclick="document.getElementById('glass-modal').classList.remove('active')"></div>
+        
+        <!-- Modal body -->
+        <div class="modal-panel relative bg-white/80 border border-white/40 shadow-[0_20px_40px_rgba(0,0,0,0.05)] p-12 md:p-20 text-center w-full max-w-2xl rounded-[3rem]">
+            
+            <div class="mb-10 text-glass-400 animate-pulse">
+                <iconify-icon class="text-6xl" icon="solar:shield-keyhole-minimalistic-bold-duotone"></iconify-icon>
+            </div>
+            
+            <h3 class="text-4xl md:text-5xl font-serif italic text-glass-900 mb-6">System Override</h3>
+            <p class="font-light text-glass-500 leading-relaxed mb-12 max-w-sm mx-auto">
+                Validating the frosted glass effect. The extreme border radius and heavy backdrop blur create a soft, cinematic overlay.
+            </p>
+
+            <div class="flex flex-col gap-4 max-w-xs mx-auto">
+                <button class="btn-beam px-8 py-5 text-[10px] font-sans font-bold tracking-[0.2em] uppercase rounded-full w-full" onclick="document.getElementById('glass-modal').classList.remove('active')">
+                    Confirm Override
+                </button>
+                <button class="hover:text-glass-400 font-mono text-[10px] uppercase tracking-[0.2em] transition-colors py-4" onclick="document.getElementById('glass-modal').classList.remove('active')">
+                    Cancel Process
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN SCRIPT CONTROLLERS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // 1. Initial State Reveals (Grid lines & Hero Text)
+            setTimeout(() => {
+                document.body.classList.add('loaded'); // Triggers struct lines
+                const heading = document.getElementById('hero-heading');
+                if (heading) heading.classList.add('reveal-active');
+            }, 100);
+
+            // 2. Intersection Observer (Scroll Animations)
+            const observerOpts = { root: null, rootMargin: '0px', threshold: 0.1 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, observerOpts);
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            // 3. Flashlight Mouse Interaction
+            const flashlightCards = document.querySelectorAll('.flashlight-card');
+            flashlightCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
