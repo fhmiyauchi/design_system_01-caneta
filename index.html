@@ -178,6 +178,20 @@
             pointer-events: none; /* Let pointer events pass to scrolling */
         }
         
+        /* 3D Kinetic Hover (from Design System) */
+        .kinetic-wrap {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        .kinetic-card {
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform;
+        }
+        .kinetic-wrap:hover .kinetic-card {
+            transform: rotateX(5deg) rotateY(-5deg) translateZ(20px);
+            box-shadow: 20px 20px 60px rgba(0,0,0,0.1);
+        }
+        
         .content-block {
             pointer-events: auto; /* Re-enable clicks strictly on the content box */
         }
@@ -284,11 +298,135 @@
 
     </div>
 
-    <!-- Padding section for after the scroll -->
-    <section class="min-h-screen bg-stone-50 flex flex-col items-center justify-center border-t border-stone-200 relative z-50 p-8 text-center">
-        <iconify-icon class="text-4xl text-stone-300 mb-6" icon="solar:check-circle-line-duotone"></iconify-icon>
-        <h2 class="text-3xl md:text-5xl font-serif italic text-stone-900 mb-4">Arquitetura de Canvas Concluída</h2>
-        <p class="font-mono text-[10px] uppercase tracking-widest text-stone-500 max-w-sm">A sequência de imagens garantiu interpolação de quadros perfeita independente do hardware decoding nativo.</p>
+    <!-- SECOND FOLD: EXPERTISE & ARCHITECTURE -->
+    <section id="expertise-section" class="bg-stone-50 py-32 px-8 md:px-16 border-t border-stone-200 relative z-50 overflow-hidden text-stone-900">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-end mb-16 border-b border-stone-200 pb-8 expertise-header">
+            <h2 class="text-4xl md:text-5xl font-bold tracking-tighter uppercase font-sans text-stone-900">
+                Arquitetura<br/>Intransigente
+            </h2>
+            <div class="font-mono text-[9px] uppercase tracking-[0.2em] text-stone-500 text-right">
+                Restaurando a Integridade Estrutural &<br/>Perfeição Visual
+            </div>
+        </div>
+
+        <!-- Bento Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 w-full max-w-[1600px] mx-auto">
+            
+            <!-- LEFT 1/3 (The Vertical Focus Image) -->
+            <div class="md:col-span-4 h-full min-h-[500px] md:min-h-[700px] reveal-card kinetic-wrap relative group">
+                <div class="kinetic-card w-full h-full bg-stone-900 rounded-xl overflow-hidden flex items-end p-8 shadow-2xl relative border border-stone-200 border-opacity-10">
+                    <!-- Subtle global overlay -->
+                    <div class="absolute inset-0 bg-stone-900/10 mix-blend-multiply z-10 transition-colors duration-700 group-hover:bg-transparent"></div>
+                    
+                    <!-- Generated Pen Detailed Image -->
+                    <img src="./assets/raw_files/pen_detail.png" class="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-1000 ease-in-out" alt="Detalhe da Caneta Precision" />
+                    
+                    <!-- Dark Gradient behind text (Requested adjustment) -->
+                    <div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-stone-900/90 via-stone-900/60 to-transparent z-10"></div>
+                    
+                    <div class="relative z-20 w-full">
+                        <div class="flex items-center gap-3 mb-6">
+                            <iconify-icon icon="solar:camera-minimalistic-line-duotone" class="text-white text-2xl group-hover:scale-125 transition-all duration-500"></iconify-icon>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-semibold tracking-tight uppercase text-white mb-2">Usinagem de Alta Precisão</h3>
+                        <p class="font-sans text-sm text-stone-300 font-light leading-relaxed">
+                            O processo em torno mecânico automatizado garante acabamento cirúrgico de refração de luz até o último micron.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT 2/3 (The Bento Grid of Features) -->
+            <div class="md:col-span-8 flex flex-col gap-6">
+                
+                <!-- Top Row (Full Width Feature) -->
+                <div class="reveal-card kinetic-wrap group relative min-h-[250px] cursor-crosshair">
+                    <div class="kinetic-card w-full h-full bg-white border border-stone-200 rounded-xl relative overflow-hidden flex items-center shadow-lg hover:shadow-2xl transition-all duration-500">
+                        <!-- AI Background Image -->
+                        <img src="./assets/raw_files/bg_titanio.png" class="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-1000 ease-in-out" alt="Titânio Background" />
+                        
+                        <!-- Readability Gradient (White drop-off left to right) -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent z-10"></div>
+                        
+                        <div class="relative z-20 w-full p-8 pointer-events-none">
+                            <h3 class="text-xl md:text-2xl font-semibold tracking-tight uppercase text-stone-900 mb-2">Titânio Aeroespacial</h3>
+                            <p class="font-sans text-sm text-stone-600 font-light max-w-sm xl:max-w-md">Estrutura principal forjada sob pressão extrema, utilizando o mesmo polímero blindado encontrado nas fuselagens espaciais, garantindo peso imperceptível e balanço impecável.</p>
+                        </div>
+                        
+                        <div class="absolute top-8 right-8 z-20 pointer-events-none">
+                            <iconify-icon icon="solar:rocket-line-duotone" class="text-3xl text-stone-300 group-hover:text-stone-900 group-hover:scale-125 transition-all duration-500"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Split Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+                    <!-- Card 1 -->
+                    <div class="reveal-card kinetic-wrap group flex-1 cursor-crosshair min-h-[280px]">
+                        <div class="kinetic-card w-full h-full bg-white border border-stone-200 rounded-xl relative overflow-hidden flex flex-col justify-end shadow-lg hover:shadow-2xl transition-all duration-500">
+                            <!-- AI Background Image -->
+                            <img src="./assets/raw_files/bg_suica.png" class="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-30 grayscale group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-1000 ease-in-out" alt="Engenharia Suiça Background" />
+                            
+                            <!-- Readability Gradient (White drop-off bottom to top) -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-white via-white/90 to-transparent z-10"></div>
+                            
+                            <div class="absolute top-8 right-8 z-20 pointer-events-none">
+                                <iconify-icon icon="solar:shield-check-line-duotone" class="text-3xl text-stone-300 group-hover:text-stone-900 group-hover:scale-125 transition-all duration-500"></iconify-icon>
+                            </div>
+                            
+                            <div class="relative z-20 p-8 pointer-events-none">
+                                <h3 class="text-xl md:text-2xl font-semibold tracking-tight uppercase text-stone-900 mb-2">Engenharia Suíça</h3>
+                                <p class="font-sans text-sm text-stone-600 font-light">Mecanismos montados à mão na Suíça. O fluxo de tinta é modulado para evitar resistência no papel.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 2 -->
+                    <div class="reveal-card kinetic-wrap group flex-1 cursor-crosshair min-h-[280px]">
+                        <div class="kinetic-card w-full h-full bg-white border border-stone-200 rounded-xl relative overflow-hidden flex flex-col justify-end shadow-lg hover:shadow-2xl transition-all duration-500">
+                            <!-- AI Background Image -->
+                            <img src="./assets/raw_files/bg_italiano.png" class="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-30 grayscale group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-1000 ease-in-out" alt="Design Italiano Background" />
+                            
+                            <!-- Readability Gradient -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-white via-white/90 to-transparent z-10"></div>
+                            
+                            <div class="absolute top-8 right-8 z-20 pointer-events-none">
+                                <iconify-icon icon="solar:ruler-pen-line-duotone" class="text-3xl text-stone-300 group-hover:text-stone-900 group-hover:scale-125 transition-all duration-500"></iconify-icon>
+                            </div>
+                            
+                            <div class="relative z-20 p-8 pointer-events-none">
+                                <h3 class="text-xl md:text-2xl font-semibold tracking-tight uppercase text-stone-900 mb-2">Design Italiano</h3>
+                                <p class="font-sans text-sm text-stone-600 font-light">Silhueta esculpida nas mais conceituadas casas de design mediterrâneo. Organismo brutal e elegante.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row (Full Width Feature) -->
+                <div class="reveal-card kinetic-wrap group relative min-h-[200px] cursor-crosshair">
+                    <div class="kinetic-card w-full h-full bg-white border border-stone-200 rounded-xl relative overflow-hidden flex items-center shadow-lg hover:shadow-2xl transition-all duration-500">
+                        <!-- AI Background Image -->
+                        <img src="./assets/raw_files/bg_precisao.png" class="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-30 grayscale group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-1000 ease-in-out object-right" alt="Precisão Nanométrica Background" />
+                        
+                        <!-- Readability Gradient (White drop-off left to right) -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent z-10"></div>
+                        
+                        <div class="relative z-20 w-full flex justify-between items-center transition-all p-8 pointer-events-none">
+                            <div class="max-w-lg">
+                                <h3 class="text-xl md:text-2xl font-semibold tracking-tight uppercase text-stone-900 mb-2">Precisão Nanométrica</h3>
+                                <p class="font-sans text-sm text-stone-600 font-light">Pena polida sob escrutínio microscópico, gerando traços imaculados indiferentemente da aceleração ou inclinação rotacional da mão.</p>
+                            </div>
+                            <div class="relative text-right">
+                                <iconify-icon icon="solar:target-bold-duotone" class="text-4xl text-stone-300 group-hover:text-stone-900 group-hover:scale-125 transition-all duration-500"></iconify-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
     </section>
 
     <script>
@@ -447,6 +585,20 @@
 
             // C: Hide Scroll Hint immediately on scroll start
             tlScroll.to('#scroll-hint', { opacity: 0, duration: 0.05 }, 0);
+            
+            // ==========================================
+            // 5. Experise Grid (Second Fold) Entry Animations
+            // ==========================================
+            gsap.set('.expertise-header', { y: 30, opacity: 0 });
+            gsap.set('.reveal-card', { y: 50, opacity: 0 });
+
+            ScrollTrigger.create({
+                trigger: '#expertise-section',
+                start: 'top 75%', // Triggers when the top of the dark section hits the 75% mark of the screen
+                animation: gsap.timeline()
+                    .to('.expertise-header', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
+                    .to('.reveal-card', { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: 'power3.out' }, "-=0.5")
+            });
             
             // Run sizing once to initialize
             resizeCanvas();
