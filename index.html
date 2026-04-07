@@ -134,6 +134,35 @@
             position: relative;
         }
 
+        .lettering-transparent-image {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(0, 0, 0, 0.1);
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1500&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            -webkit-background-clip: text;
+            background-clip: text;
+            background-attachment: fixed;
+        }
+
+        /* Custom Input DS */
+        .ds-input {
+            width: 100%;
+            background: #FAFAFA;
+            border: 1px solid #D5D5CD;
+            padding: 14px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: #1C1C1C;
+            transition: all 0.3s ease;
+        }
+        .ds-input:focus {
+            outline: none;
+            border-color: #1C1C1C;
+            background: #FFFFFF;
+            box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.2);
+        }
+
         .beam-button {
             position: relative;
             overflow: hidden;
@@ -275,7 +304,8 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255, 255, 255, 0.1), transparent 40%);
+            /* Using Accent-500 (Cyan) from DS for the flashlight */
+            background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(56, 189, 248, 0.15), transparent 40%);
             z-index: 10;
             opacity: 0;
             transition: opacity 0.5s;
@@ -286,15 +316,99 @@
             opacity: 1;
         }
 
+        /* ----------------------------------
+           Custom Cursor
+        ----------------------------------- */
+        body {
+            cursor: none; /* Hide default cursor */
+        }
+        #custom-cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 14px; height: 14px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, border 0.3s;
+            mix-blend-mode: difference;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #custom-cursor .cursor-label {
+            opacity: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #FFFFFF;
+            white-space: nowrap;
+            transition: opacity 0.2s ease;
+        }
+        #custom-cursor.cursor-hover {
+            width: 60px; height: 60px;
+            background: transparent;
+            border: 1.5px solid #FFFFFF;
+            mix-blend-mode: difference;
+        }
+        #custom-cursor.cursor-hover-labeled {
+            width: 90px; height: 90px;
+            background: transparent;
+            border: 1px dashed rgba(255,255,255,0.6);
+            mix-blend-mode: difference;
+        }
+        #custom-cursor.cursor-hover-labeled .cursor-label {
+            opacity: 1;
+        }
+
+        /* ----------------------------------
+           Preloader
+        ----------------------------------- */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: #FAFAFA;
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+        }
+        .preloader-hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
     </style>
 </head>
 
 <body>
 
+    <!-- Preloader -->
+    <div id="preloader">
+        <iconify-icon class="text-4xl text-stone-900 mb-6 animate-pulse" icon="solar:pen-new-round-bold-duotone" aria-hidden="true"></iconify-icon>
+        <div class="font-mono text-xs uppercase tracking-widest text-stone-500 overflow-hidden h-4 relative w-16 text-center">
+            <span id="preloader-counter" class="absolute inset-x-0 bottom-0 leading-none">0%</span>
+        </div>
+        <div class="w-48 h-px bg-stone-200 mt-4 overflow-hidden relative">
+            <div id="preloader-bar" class="absolute inset-y-0 left-0 bg-stone-900 w-0 transition-all duration-75"></div>
+        </div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div id="custom-cursor">
+        <span class="cursor-label"></span>
+    </div>
+
     <!-- Minimalist Navbar -->
     <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 md:px-16 py-6 mix-blend-difference text-white" id="nav-bar">
         <div class="font-bold tracking-tighter text-2xl uppercase flex items-center justify-center gap-2 pointer-events-auto cursor-pointer">
-            <iconify-icon class="text-2xl" icon="solar:pen-new-round-bold-duotone"></iconify-icon>
+            <iconify-icon class="text-2xl" icon="solar:pen-new-round-bold-duotone" aria-hidden="true"></iconify-icon>
         </div>
         
         <nav class="hidden md:flex gap-10 font-mono text-[10px] uppercase tracking-widest text-stone-300 pointer-events-auto">
@@ -303,10 +417,27 @@
             <a href="#" class="hover:text-white transition-colors">Especs</a>
         </nav>
 
-        <button class="flex items-center justify-center hover:text-stone-300 transition-colors pointer-events-auto">
-            <iconify-icon class="text-xl" icon="solar:bag-3-outline"></iconify-icon>
-        </button>
+        <div class="flex items-center gap-6 pointer-events-auto">
+            <button class="flex items-center justify-center hover:text-stone-300 transition-colors" aria-label="Sacola de Compras">
+                <iconify-icon class="text-xl" icon="solar:bag-3-outline" aria-hidden="true"></iconify-icon>
+            </button>
+            <button class="md:hidden flex items-center justify-center hover:text-stone-300 transition-colors" id="mobile-menu-btn" aria-label="Abrir Menu Mobile">
+                <iconify-icon class="text-2xl" icon="solar:hamburger-menu-line-duotone" aria-hidden="true"></iconify-icon>
+            </button>
+        </div>
     </header>
+
+    <!-- Mobile Screen Overlay Menu -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-stone-900/90 backdrop-blur-xl z-[45] flex flex-col justify-center items-center text-white opacity-0 pointer-events-none transition-all duration-500">
+        <nav class="flex flex-col gap-10 text-center">
+            <a href="#" class="text-4xl font-serif italic hover:text-stone-400 transition-colors mobile-link">Precisão</a>
+            <a href="#" class="text-4xl font-serif italic hover:text-stone-400 transition-colors mobile-link">Design</a>
+            <a href="#" class="text-4xl font-serif italic hover:text-stone-400 transition-colors mobile-link">Especs</a>
+        </nav>
+        <div class="absolute bottom-10 font-mono text-[10px] uppercase tracking-widest text-stone-500">
+            Série High-Tech
+        </div>
+    </div>
 
     <!-- The Mighty Canvas -->
     <canvas id="sequence-canvas"></canvas>
@@ -315,26 +446,37 @@
     <!-- Main Scroll Track for GSAP Scrubbing -->
     <div class="scroll-trigger-container">
         
-        <!-- The Pinned Hero Section Overlaying the Canvas -->
-        <section class="hero-pin">
+        <!-- OVERLAY UI -->
+        <div class="hero-pin relative w-full h-[100vh] pointer-events-none z-10 flex border-b border-stone-200">
             
+            <!-- Seamless Glass Fade Architecture with Masked Blur -> Eliminates harsh line -->
+            <div id="hero-glass-panel" class="absolute inset-0 z-[5] pointer-events-none" style="backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); mask-image: linear-gradient(to right, black 0%, black 25%, transparent 60%); -webkit-mask-image: linear-gradient(to right, black 0%, black 25%, transparent 60%);">
+                <!-- Color fade gradient that sits behind the mask -->
+                <div class="absolute inset-0 bg-gradient-to-r from-white/95 via-white/70 to-transparent"></div>
+            </div>
+
             <!-- Left floating UI layer -->
             <div class="w-full max-w-[1600px] mx-auto px-8 md:px-16 flex flex-col justify-center h-full relative z-20 content-block pointer-events-none" id="content-block">
                 
-                <div class="max-w-[700px] pointer-events-auto relative">
-                    <!-- Adjusted glow for left alignment -->
-                    <div class="absolute inset-[-50px] bg-radial-gradient from-white/90 to-transparent blur-3xl z-[-1] rounded-full pointer-events-none opacity-80" style="background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 70%);"></div>
+                <div class="max-w-[700px] pointer-events-auto relative mt-12 md:mt-0">
+
+                    <!-- Dynamic Floating Badge -->
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-stone-900 border border-stone-800 rounded-full w-max mb-8 shadow-sm">
+                        <div class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-stone-200">Pré-venda Exclusiva</span>
+                    </div>
 
                     <!-- Eyebrow -->
-                    <div class="inline-flex items-center justify-start gap-3 overflow-hidden mb-6">
+                    <div class="inline-flex items-center justify-start gap-3 overflow-hidden mb-6 block w-full">
                         <span class="w-8 h-px bg-stone-400 eyebrow-line"></span>
                         <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-stone-500 eyebrow-text">Série High-Tech</span>
                     </div>
                     
                     <!-- Headline -->
-                    <h1 class="text-[4rem] md:text-[6rem] lg:text-[7rem] font-bold tracking-tighter leading-[0.85] uppercase text-stone-900" id="main-headline">
+                    <h1 class="text-[3.5rem] md:text-[5.5rem] lg:text-[6.5rem] font-semibold tracking-tighter leading-[0.9] uppercase text-stone-800" id="main-headline">
                         A Nova<br/>
-                        <span class="lettering-transparent font-serif italic font-normal tracking-tight">Fronteira</span><br/>
+                        <!-- Fronteira heavily bolded to dominate the thicker surrounding text natively -->
+                        <span class="text-[4.5rem] md:text-[7.5rem] lg:text-[9rem] text-stone-900 font-serif italic tracking-tighter relative z-10 block leading-[0.8] py-2" style="font-weight: 800; text-shadow: 0 4px 15px rgba(28,28,28,0.15);">Fronteira</span>
                         Da Escrita.
                     </h1>
 
@@ -345,10 +487,10 @@
 
                     <!-- Buttons -->
                     <div class="flex flex-col sm:flex-row items-center justify-start gap-4 mt-10 button-group w-full">
-                        <button class="beam-button w-full sm:w-auto px-8 py-4 rounded-full text-xs font-mono tracking-widest uppercase shadow-xl">
-                            Reservar Unidade
+                        <button class="beam-button w-full sm:w-auto px-8 py-4 rounded-sm text-xs font-mono tracking-widest uppercase shadow-xl flex items-center justify-center gap-3">
+                            Reservar Unidade <iconify-icon class="text-lg" icon="solar:cart-large-minimalistic-line-duotone"></iconify-icon>
                         </button>
-                        <button class="secondary-button w-full sm:w-auto px-8 py-4 rounded-full border border-stone-200 text-stone-900 text-xs font-mono tracking-widest uppercase flex items-center justify-center gap-2 shadow-sm">
+                        <button class="secondary-button w-full sm:w-auto px-8 py-4 rounded-sm border border-stone-200 text-stone-900 text-xs font-mono tracking-widest uppercase flex items-center justify-center gap-2 shadow-sm">
                             <iconify-icon class="text-lg" icon="solar:play-circle-line-duotone"></iconify-icon>
                             Cinemática
                         </button>
@@ -533,10 +675,123 @@
                         </div>
                     </div>
                 </div>
-                
             </div>
         </div>
     </section>
+
+    <!-- THIRD FOLD: TECHNICAL SPECS -->
+    <section id="specs-section" class="bg-white py-32 relative z-50 text-stone-900 border-t border-stone-200">
+        <div class="max-w-[1440px] mx-auto px-8 md:px-16 grid grid-cols-1 md:grid-cols-12 gap-16">
+            <!-- Left Header -->
+            <div class="md:col-span-5 reveal-card">
+                <div class="inline-flex items-center justify-start gap-3 mb-6">
+                    <span class="w-8 h-px bg-stone-300"></span>
+                    <span class="font-mono text-[10px] uppercase tracking-widest text-stone-500">Dados Empíricos</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-serif italic leading-tight text-stone-900 mb-8">
+                    Engenharia em<br/>números crus.
+                </h2>
+                <p class="text-stone-500 font-light leading-relaxed max-w-sm">
+                    As exatas tolerâncias e compostos utilizados no chassi, validados sob os mesmos testes de estresse aplicados à aviação furtiva.
+                </p>
+            </div>
+            
+            <!-- Right Technical Specs Grid -->
+            <div class="md:col-span-7">
+                <div class="border-t border-stone-200">
+                    
+                    <div class="flex flex-col md:flex-row justify-between py-6 border-b border-stone-200 reveal-card">
+                        <span class="font-mono text-xs uppercase tracking-widest text-stone-400 w-32 shrink-0">Chassi</span>
+                        <div class="flex flex-col flex-1 gap-1">
+                            <span class="text-lg text-stone-900 flex items-center gap-3">
+                                Titânio Grau 5 (Ti-6Al-4V)
+                                <div class="relative group cursor-pointer inline-flex items-center justify-center w-6 h-6 rounded bg-stone-100 border border-stone-200 hover:bg-stone-900 hover:text-white transition-all pointer-events-auto">
+                                    <iconify-icon icon="solar:info-circle-line-duotone" class="text-xs"></iconify-icon>
+                                    <div class="absolute bottom-full mb-2 bg-stone-900 text-white text-[10px] font-mono tracking-widest uppercase px-3 py-2 rounded opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all pointer-events-none whitespace-nowrap shadow-xl z-50">
+                                        Liga Classe Aviação Furtiva
+                                        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-stone-900 rotate-45"></div>
+                                    </div>
+                                </div>
+                            </span>
+                            <span class="text-sm font-light text-stone-500">Polido e selado hidrofobicamente.</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row justify-between py-6 border-b border-stone-200 reveal-card">
+                        <span class="font-mono text-xs uppercase tracking-widest text-stone-400 w-32 shrink-0">Dimensões</span>
+                        <div class="flex flex-col flex-1 gap-1">
+                            <span class="text-lg text-stone-900">142mm × 10.5mm</span>
+                            <span class="text-sm font-light text-stone-500">Circunferência ergonomicamente esculpida.</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row justify-between py-6 border-b border-stone-200 reveal-card">
+                        <span class="font-mono text-xs uppercase tracking-widest text-stone-400 w-32 shrink-0">Massa</span>
+                        <div class="flex flex-col flex-1 gap-1">
+                            <span class="text-lg text-stone-900 flex items-center gap-3">
+                                22.4 Gramas
+                                <div class="relative group cursor-pointer inline-flex items-center justify-center w-6 h-6 rounded bg-stone-100 border border-stone-200 hover:bg-stone-900 hover:text-white transition-all pointer-events-auto">
+                                    <iconify-icon icon="solar:scale-line-duotone" class="text-xs"></iconify-icon>
+                                    <div class="absolute bottom-full mb-2 bg-stone-900 text-white text-[10px] font-mono tracking-widest uppercase px-3 py-2 rounded opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all pointer-events-none whitespace-nowrap shadow-xl z-50">
+                                        Otimizado para fadiga nula
+                                        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-stone-900 rotate-45"></div>
+                                    </div>
+                                </div>
+                            </span>
+                            <span class="text-sm font-light text-stone-500">Balanceamento de centro de gravidade em 54%.</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row justify-between py-6 border-b border-stone-200 reveal-card">
+                        <span class="font-mono text-xs uppercase tracking-widest text-stone-400 w-32 shrink-0">Sistema</span>
+                        <div class="flex flex-col flex-1 gap-1">
+                            <span class="text-lg text-stone-900">Micro-Bomba de Polímero</span>
+                            <span class="text-sm font-light text-stone-500">Tensão interfacial nula durante a liberação da tinta.</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EPIC FOOTER -->
+    <footer class="bg-stone-900 pt-32 pb-12 relative z-50 overflow-hidden text-center">
+        <!-- Giant Call to Action -->
+        <div class="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto px-8 gap-8 reveal-card">
+            <h2 class="text-5xl md:text-7xl lg:text-[6.5rem] font-serif italic text-white tracking-tight leading-[1]">
+                A materialização<br/><span class="text-stone-400 tracking-tighter">do pensamento.</span>
+            </h2>
+            <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-stone-500 leading-relaxed max-w-md mb-2">
+                Muito além da caligrafia. Criamos um ecossistema tátil e tecnológico que transforma o mero ato de escrever numa experiência lúdica indescritível.
+            </p>
+            
+            <!-- Reservation Input form (DS Integration) -->
+            <div class="w-full max-w-md flex flex-col sm:flex-row gap-4 mt-6 text-left pointer-events-auto">
+                <div class="relative flex-1">
+                    <input type="email" class="ds-input w-full rounded" placeholder="seu@email.com" />
+                    <div class="absolute inset-y-0 right-4 flex items-center text-stone-400 pointer-events-none">
+                        <iconify-icon class="text-lg" icon="solar:letter-bold-duotone"></iconify-icon>
+                    </div>
+                </div>
+                <button class="beam-button px-8 py-3 rounded text-xs font-mono tracking-widest uppercase shadow-2xl shrink-0">
+                    Garantir Vaga
+                </button>
+            </div>
+        </div>
+
+        <div class="absolute inset-0 bg-radial-gradient from-accent-500/10 to-transparent blur-3xl rounded-full z-0 pointer-events-none opacity-30" style="background: radial-gradient(circle at bottom, rgba(255, 255, 255, 0.1) 0%, transparent 60%);"></div>
+
+        <!-- Meta / Portfolio Footer -->
+        <div class="mt-32 max-w-[1440px] mx-auto px-8 border-t border-stone-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 text-stone-500 text-[10px] font-mono uppercase tracking-widest">
+            <span>© 2026 UI/UX Architect Portfolio</span>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-stone-300 transition-colors">Privacidade</a>
+                <a href="#" class="hover:text-stone-300 transition-colors">Termos</a>
+                <a href="#" class="hover:text-stone-300 transition-colors">Retornos</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -570,7 +825,7 @@
             // 2. Initial UI Animation (GSAP)
             // ==========================================
             const headlineText = new SplitType('#main-headline', { types: 'lines,words,chars' })
-            const tlLoad = gsap.timeline({ defaults: { ease: 'power4.out' } })
+            const tlLoad = gsap.timeline({ defaults: { ease: 'power4.out' }, paused: true })
             
             gsap.set('#nav-bar', { y: -50, opacity: 0 })
             gsap.set('.eyebrow-line', { scaleX: 0, transformOrigin: 'center' })
@@ -615,10 +870,32 @@
 
             const images = [];
             const sequence = { frame: 0 };
+            
+            let loadedImages = 0;
+            const preloaderCounter = document.getElementById('preloader-counter');
+            const preloaderBar = document.getElementById('preloader-bar');
+            const preloader = document.getElementById('preloader');
 
-            // Preload all images synchronously for immediate availability
+            function imageLoaded() {
+                loadedImages++;
+                const progress = Math.min((loadedImages / frameCount) * 100, 100);
+                preloaderCounter.innerText = `${Math.floor(progress)}%`;
+                preloaderBar.style.width = `${progress}%`;
+
+                if (loadedImages === frameCount) {
+                    setTimeout(() => {
+                        preloader.classList.add('preloader-hidden');
+                        resizeCanvas();
+                        tlLoad.play();
+                    }, 500);
+                }
+            }
+
+            // Preload all images
             for (let i = 0; i < frameCount; i++) {
                 const img = new Image();
+                img.onload = imageLoaded;
+                img.onerror = imageLoaded;
                 img.src = currentFrame(i);
                 images.push(img);
             }
@@ -652,10 +929,8 @@
                 }
             }
 
-            // Ensure first frame renders on load
-            images[0].onload = () => {
-                resizeCanvas();
-            };
+            // Initial draw attempt will happen on load completion
+            // No need to ensure draw here anymore because preloader handles the start
 
             // ==========================================
             // 4. GSAP ScrollTrigger Sequence Timeline
@@ -663,8 +938,9 @@
             const tlScroll = gsap.timeline({
                 scrollTrigger: {
                     trigger: ".scroll-trigger-container",
+                    pin: ".hero-pin",
                     start: "top top",
-                    end: "bottom bottom",
+                    end: "+=300%",
                     scrub: 1, // Fluid scrubbing (minimal catchup smoothing)
                     onUpdate: (self) => {
                         gsap.set('#scroll-progress', { height: `${self.progress * 100}%` });
@@ -692,6 +968,13 @@
                 ease: "power2.in"
             }, 0);
 
+            // Also fade out the background glass panel so the canvas sequence is beautifully clear
+            tlScroll.to('#hero-glass-panel', {
+                opacity: 0,
+                duration: 0.15,
+                ease: "power2.in"
+            }, 0);
+
             // C: Hide Scroll Hint immediately on scroll start
             tlScroll.to('#scroll-hint', { opacity: 0, duration: 0.05 }, 0);
             
@@ -707,8 +990,18 @@
                 animation: gsap.timeline()
                     .to('.expertise-header', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
                     .call(() => document.querySelector('.expertise-header').classList.add('reveal-active'), null, "-=0.8")
-                    .to('.reveal-card', { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: 'power3.out' }, "-=0.5")
+                    .to('#expertise-section .reveal-card', { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: 'power3.out' }, "-=0.5")
             });
+
+            // Generic scroll triggers for new sections
+            gsap.utils.toArray(['#specs-section', 'footer']).forEach(section => {
+                ScrollTrigger.create({
+                    trigger: section,
+                    start: 'top 85%',
+                    animation: gsap.timeline().to(section.querySelectorAll('.reveal-card'), { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out' })
+                });
+            });
+            
             
             // Run sizing once to initialize
             resizeCanvas();
@@ -725,6 +1018,86 @@
                     card.style.setProperty('--mouse-y', `${y}px`);
                 });
             });
+
+            // ==========================================
+            // 7. Custom Cursor Logic
+            // ==========================================
+            const cursor = document.getElementById('custom-cursor');
+            const cursorLabel = cursor.querySelector('.cursor-label');
+            let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+            
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            // GSAP ticker for smooth cursor interpolation
+            gsap.ticker.add(() => {
+                // LERP (Linear Interpolation)
+                cursorX += (mouseX - cursorX) * 0.2;
+                cursorY += (mouseY - cursorY) * 0.2;
+                cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            });
+
+            // Hover states for links and buttons
+            window.addEventListener('mouseover', (e) => {
+                const interactiveZones = e.target.closest('a, button, .kinetic-wrap, #nav-bar iconify-icon, .ds-input');
+                if (interactiveZones) {
+                    let label = "";
+                    if(interactiveZones.classList.contains('kinetic-wrap')) label = "VER MAIS";
+                    else if(interactiveZones.classList.contains('secondary-button')) label = "PLAY";
+                    else if(interactiveZones.classList.contains('beam-button')) label = "RESERVAR";
+                    
+                    if(label) {
+                        cursor.classList.add('cursor-hover-labeled');
+                        if(cursorLabel) cursorLabel.textContent = label;
+                    } else {
+                        cursor.classList.add('cursor-hover');
+                    }
+                }
+            });
+            window.addEventListener('mouseout', (e) => {
+                const interactiveZones = e.target.closest('a, button, .kinetic-wrap, #nav-bar iconify-icon, .ds-input');
+                if (interactiveZones) {
+                    cursor.classList.remove('cursor-hover', 'cursor-hover-labeled');
+                    if(cursorLabel) cursorLabel.textContent = "";
+                }
+            });
+
+            // ==========================================
+            // 8. Mobile Menu Interaction
+            // ==========================================
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            let menuOpen = false;
+            
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    menuOpen = !menuOpen;
+                    if (menuOpen) {
+                        mobileOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                        mobileMenuBtn.innerHTML = '<iconify-icon class="text-2xl" icon="solar:close-square-line-duotone" aria-hidden="true"></iconify-icon>';
+                    } else {
+                        mobileOverlay.classList.add('opacity-0', 'pointer-events-none');
+                        mobileMenuBtn.innerHTML = '<iconify-icon class="text-2xl" icon="solar:hamburger-menu-line-duotone" aria-hidden="true"></iconify-icon>';
+                    }
+                });
+            }
+
+            // Close mobile menu if a link is clicked
+            document.querySelectorAll('.mobile-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (menuOpen) {
+                        menuOpen = false;
+                        mobileOverlay.classList.add('opacity-0', 'pointer-events-none');
+                        mobileMenuBtn.innerHTML = '<iconify-icon class="text-2xl" icon="solar:hamburger-menu-line-duotone" aria-hidden="true"></iconify-icon>';
+                    }
+                });
+            });
+
+            // Re-trigger ScrollTrigger to recognize new footer and specs height layout
+            ScrollTrigger.refresh();
+
         });
     </script>
 </body>
