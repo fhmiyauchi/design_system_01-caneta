@@ -1,0 +1,314 @@
+        /* CSS Reset & Setup */
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            color: #1C1C1C;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ----------------------------------
+           Canvas Fullscreen Fix
+        ----------------------------------- */
+        #sequence-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            mix-blend-mode: darken;
+            pointer-events: none;
+        }
+
+        .canvas-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(255,255,255,0.7) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ----------------------------------
+           GSAP Setup Classes
+        ----------------------------------- */
+        .word {
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .char {
+            transform: translateY(110%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ----------------------------------
+           Aesthetic Components (from DS1)
+        ----------------------------------- */
+        
+        .lettering-transparent {
+            color: transparent;
+            -webkit-text-stroke: 1.5px rgba(28, 28, 28, 0.9);
+            position: relative;
+        }
+
+        .lettering-transparent-image {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(0, 0, 0, 0.1);
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1500&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            -webkit-background-clip: text;
+            background-clip: text;
+            background-attachment: fixed;
+        }
+
+        /* Custom Input DS */
+        .ds-input {
+            width: 100%;
+            background: #FAFAFA;
+            border: 1px solid #D5D5CD;
+            padding: 14px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: #1C1C1C;
+            transition: all 0.3s ease;
+        }
+        .ds-input:focus {
+            outline: none;
+            border-color: #1C1C1C;
+            background: #FFFFFF;
+            box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.2);
+        }
+
+        .beam-button {
+            position: relative;
+            overflow: hidden;
+            background: #1C1C1C;
+            color: #FFFFFF;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .beam-button::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg);
+            animation: beam 3s infinite;
+        }
+        .beam-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(28, 28, 28, 0.3);
+        }
+
+        .secondary-button {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+        }
+        .secondary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            background: #FFFFFF;
+        }
+
+        @keyframes beam {
+            0% { left: -100%; }
+            50%, 100% { left: 200%; }
+        }
+
+        /* ----------------------------------
+           Layout Control
+        ----------------------------------- */
+        .scroll-trigger-container {
+            height: 400vh; 
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-pin {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        
+        /* 3D Kinetic Hover (from Design System) */
+        .kinetic-wrap {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        .kinetic-card {
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform;
+        }
+        .kinetic-wrap:hover .kinetic-card {
+            transform: rotateX(2deg) rotateY(-2deg) translateZ(10px);
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.05);
+        }
+        
+        .content-block {
+            pointer-events: auto;
+        }
+
+        .text-glow-backer {
+            position: absolute;
+            inset: -50px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+            border-radius: 50%;
+            filter: blur(20px);
+        }
+
+        /* ----------------------------------
+           Aesthetics & Interactions
+        ----------------------------------- */
+        
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+        }
+
+        .ambient-glow {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(210, 190, 160, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: 0;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+        }
+
+        .marquee-mask {
+            mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+            -webkit-mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+        }
+        .marquee-container {
+            display: flex;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .text-reveal-wrapper {
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: bottom;
+        }
+        .text-reveal-content {
+            transform: translateY(110%);
+            opacity: 0;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+            display: block;
+        }
+        .reveal-active .text-reveal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Flashlight Effect */
+        .flashlight-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(56, 189, 248, 0.15), transparent 40%);
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+        .flashlight-card:hover::before {
+            opacity: 1;
+        }
+
+        /* ----------------------------------
+           Custom Cursor
+        ----------------------------------- */
+        body {
+            cursor: none; 
+        }
+        #custom-cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 14px; height: 14px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, border 0.3s;
+            mix-blend-mode: difference;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #custom-cursor .cursor-label {
+            opacity: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #FFFFFF;
+            white-space: nowrap;
+            transition: opacity 0.2s ease;
+        }
+        #custom-cursor.cursor-hover {
+            width: 60px; height: 60px;
+            background: transparent;
+            border: 1.5px solid #FFFFFF;
+            mix-blend-mode: difference;
+        }
+        #custom-cursor.cursor-hover-labeled {
+            width: 90px; height: 90px;
+            background: transparent;
+            border: 1px dashed rgba(255,255,255,0.6);
+            mix-blend-mode: difference;
+        }
+        #custom-cursor.cursor-hover-labeled .cursor-label {
+            opacity: 1;
+        }
+
+        /* ----------------------------------
+           Preloader
+        ----------------------------------- */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: #FAFAFA;
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+        }
+        .preloader-hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }

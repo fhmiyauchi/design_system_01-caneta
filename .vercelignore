@@ -1,0 +1,14 @@
+# Reference templates and design system drafts (not needed in production)
+assets/templates/
+assets/prompts/
+
+# macOS system files
+.DS_Store
+assets/.DS_Store
+assets/images/.DS_Store
+
+# Old source folders (if any remain)
+assets/raw_files/
+
+# Git folder
+.git/
